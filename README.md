@@ -20,21 +20,39 @@ Then dove in on the following
 - [How to structure your Go Applications](https://www.youtube.com/watch?v=VQym87o91f8)
 
 
+## Dependencies (Installation & Run)
+```bash
+# Mux Router
+$ go get github.com/gorilla/mux
+# Gorm Orm
+$ go get github.com/jinzhu/gorm
+```
+
+
+
 ## Docker Guideline 
 To run the API use the following: 
+```bash 
+$ docker-compose -f ./docker-compose.yml up -d
 
-`docker build -t` 
-
-```docker run -p 8080:8081 -it goapi```
+$ docker-compose up
+```
 
 Dockerfile included in the project 
 
 ## Testing API Endpoints 
-Endpoint | Handler
------------- | -------------
-Content from cell 1 | Content from cell 2
-Content in the first column | Content in the second column
+Endpoint                                        | Description
+------------                                    | -------------
+(GET)/assets                                    | endpoint to receive a user id and return a list of all the user’s assets
+(POST)/assets/{id}/favorite/{bool}              | endpoints that would add an asset to favourites, remove it
+(PUT)/assets/{id}/description                   | edit its description
 
+
+
+[] Note that users have no limit on how many assets they want on their favourites so your service will need to provide a reasonable response time
+[] Useful and passing tests would be also be viewed favourably
+[] A working server application with functional API is required
+[] It is appreciated, though not required, if a Dockerfile is included.
 
 
 
@@ -47,6 +65,15 @@ Package Dependencies
 - [ ] Gorilla Mux 
 - [ ] GORM Go Orm 
 
+
+Docker Compose Settings 
+https://github.com/kisulken/bulletinApi/blob/master/docker-compose.yml
+
+Initial Implementation
+https://github.com/dedidot/simple-api-golang
+
+Decorators example
+https://gist.github.com/thomasdarimont/31b26f782644c92effd0df3f7b64ef5d
 
 
 

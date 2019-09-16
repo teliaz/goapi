@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+
+  db:
+    container_name: gwidb
+    image: teliaz/postgres
+    hostname: db
+    environment:
+      GET_HOST_FROM: dns
+      POSTGRES_DB: gwi
+      POSTGRES_USER: gwiuser
+      POSTGRES_PASWORD: secretpassword
+    ports:
+      - 5432:5432
+    networks:
+      - gwinetwork
+
+  api:
+    container_name: gwiapi  
+    image: teliaz/gwiapi:v1
+    hostname: api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      GET_HOSTS_FROM: dns
+    networks:
+    - gwinetwork
+    #volumes:
+    #- .:/go/src/github.com/teliaz/goapi
+    ports:
+    - 8080:8080
+    depends_on:
+    - db
+    links:
+    - db
+networks:
+  gwinetwork:
+    driver: bridge
