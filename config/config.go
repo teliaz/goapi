@@ -6,6 +6,8 @@ type Config struct {
 
 type DBConfig struct {
 	Dialect  string
+	Host     string
+	Port     int
 	Username string
 	Password string
 	Name     string
@@ -16,9 +18,11 @@ func GetConfig() *Config {
 	return &Config{
 		DB: &DBConfig{
 			Dialect:  "postgres",
-			Username: "gwi-dev",
+			Host:     "127.0.0.1",
+			Port:     5432,
+			Username: "gwiuser",
 			Password: "secretpassword",
-			Name:     "gwi-db",
+			Name:     "gwi",
 			Charset:  "utf8",
 		},
 	}

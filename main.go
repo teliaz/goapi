@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"./app"
-	"./config"
+	"github.com/teliaz/goapi/app"
+	"github.com/teliaz/goapi/config"
 )
 
 func main() {
@@ -12,7 +12,5 @@ func main() {
 
 	app := &app.App{}
 	app.Initialize(config)
-
-	log.Fatal(app.Run())
-
+	log.Fatal(app.Run(":8000")) // In case this port is used elsewhere
 }
