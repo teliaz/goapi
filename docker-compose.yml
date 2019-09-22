@@ -4,7 +4,7 @@ services:
 
   db:
     container_name: gwidb
-    image: teliaz/postgres
+    image: postgres
     hostname: db
     environment:
       GET_HOST_FROM: dns
@@ -18,7 +18,7 @@ services:
 
   api:
     container_name: gwiapi  
-    image: teliaz/gwiapi:v1
+    image: gwiapi:v1
     hostname: api
     build:
       context: .

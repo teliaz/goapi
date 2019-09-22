@@ -12,5 +12,5 @@ func main() {
 
 	app := &app.App{}
 	app.Initialize(config)
-	log.Fatal(app.Run(":8000")) // In case this port is used elsewhere
+	log.Fatal(app.Run(":8080")) // In case this port is used elsewhere
 }

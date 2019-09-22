@@ -40,10 +40,13 @@ func (a *App) Initialize(config *config.Config) {
 // Set All required routes
 func (a *App) setRouters() {
 
-	// Handling Mux routes
-	a.Get("/assets", a.handleRequest(handlers.GetAllAssets))
+	// Auth Routes
+	a.Get("/auth", a.handleRequest(handlers.SignIn))
+
+	// Assets Routes
+	a.Get("/assets", a.handleRequest(handlers.GetAssets))
 	a.Get("/assets/{id:[0-9]+}", a.handleRequest(handlers.GetAsset))
-	a.Put("/assets/{id:[0-9]+}/isFavorite/{isFavorite}", a.handleRequest(handlers.UpdateAssetIsFavorite))
+	a.Put("/assets/{id:[0-9]+}/isFavorite/{isFavorite}", a.handleRequest(handlers.SetAssetFavorite))
 	a.Put("/assets/{id:[0-9]+}/title/{title}", a.handleRequest(handlers.UpdateAssetTitle))
 	a.Delete("/assets/{id:[0-9]+}", a.handleRequest(handlers.DeletAsset))
 

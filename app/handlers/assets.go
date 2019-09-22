@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
@@ -10,47 +11,27 @@ import (
 	"github.com/teliaz/goapi/app/models"
 )
 
-func GetAllAssets(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+func GetAssets(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	assets := []models.Asset{}
 	db.Find(&assets)
 	respondJSON(w, http.StatusOK, assets)
 }
 
-/*
-func GetChart(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
-	project := models.Project{}
-
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&project); err != nil {
-		respondError(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	defer r.Body.Close()
-
-	if err := db.Save(&project).Error; err != nil {
-		respondError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	respondJSON(w, http.StatusCreated, project)
-}*/
-
-/*
-func GetProject(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+func GetAsset(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-
-	title := vars["title"]
-	project := getProjectOr404(db, title, w, r)
-	if project == nil {
+	id, _ := strconv.ParseUint(vars["id"], 10, 32)
+	asset := getAssetOr404(db, uint(id), w, r)
+	if asset == nil {
 		return
 	}
-	respondJSON(w, http.StatusOK, project)
-}*/
+	respondJSON(w, http.StatusOK, asset)
+}
 
 func UpdateAssetTitle(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	title := vars["title"]
-	asset := getAssetOr404(db, title, w, r)
+	id, _ := strconv.ParseUint(vars["id"], 10, 32)
+	asset := getAssetOr404(db, uint(id), w, r)
 	if asset == nil {
 		return
 	}
@@ -62,6 +43,9 @@ func UpdateAssetTitle(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
+	// &asset.UpdateAssetTitle(title)
+	// TODO: HELLOOOOO
+
 	if err := db.Save(&asset).Error; err != nil {
 		respondError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -69,60 +53,36 @@ func UpdateAssetTitle(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, asset)
 }
 
-/*
-func DeleteProject(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+func UpdateAssetIsFavorite(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	title := vars["title"]
-	project := getProjectOr404(db, title, w, r)
-	if project == nil {
+	id, _ := strconv.ParseUint(vars["id"], 10, 32)
+	asset := getAssetOr404(db, uint(id), w, r)
+	if asset == nil {
 		return
 	}
-	if err := db.Delete(&project).Error; err != nil {
+
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&asset); err != nil {
+		respondError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	defer r.Body.Close()
+
+	// &asset.UpdateAssetTitle(title)
+	// TODO: HELLOOOOO
+
+	if err := db.Save(&asset).Error; err != nil {
 		respondError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondJSON(w, http.StatusNoContent, nil)
+	respondJSON(w, http.StatusOK, asset)
 }
-
-func ArchiveProject(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-
-	title := vars["title"]
-	project := getProjectOr404(db, title, w, r)
-	if project == nil {
-		return
-	}
-	project.Archive()
-	if err := db.Save(&project).Error; err != nil {
-		respondError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	respondJSON(w, http.StatusOK, project)
-}
-
-func RestoreProject(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-
-	title := vars["title"]
-	project := getProjectOr404(db, title, w, r)
-	if project == nil {
-		return
-	}
-	project.Restore()
-	if err := db.Save(&project).Error; err != nil {
-		respondError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	respondJSON(w, http.StatusOK, project)
-}
-
-*/
 
 // Gets an Asset instance if exists, or respond the 404 error otherwise
-func getAssetOr404(db *gorm.DB, title string, w http.ResponseWriter, r *http.Request) *models.Asset {
+func getAssetOr404(db *gorm.DB, id uint, w http.ResponseWriter, r *http.Request) *models.Asset {
 	asset := models.Asset{}
-	if err := db.First(&asset, models.Asset{Title: title}).Error; err != nil {
+	if err := db.First(&asset, models.Asset{Id: id}).Error; err != nil {
 		respondError(w, http.StatusNotFound, err.Error())
 		return nil
 	}

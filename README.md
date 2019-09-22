@@ -18,7 +18,7 @@ Then dove in on the following
 - [Dockerized Implementation with Postgress](https://github.com/kisulken/bulletinApi/blob/master/main.go)
 - [How to automatically handle vendor folder with godep](https://github.com/tools/godep)
 - [How to structure your Go Applications](https://www.youtube.com/watch?v=VQym87o91f8)
-
+- [Concurrency made easy](https://www.youtube.com/watch?v=DqHb5KBe7qI)
 
 ## Dependencies (Installation & Run)
 ```bash
@@ -30,17 +30,17 @@ $ go get github.com/jinzhu/gorm
 
 
 
-## Docker Guideline 
-To run the API use the following: 
+## Docker Guideline
+To run the API use the following:
 ```bash 
 $ docker-compose -f ./docker-compose.yml up -d
 
 $ docker-compose up
 ```
 
-Dockerfile included in the project 
+Dockerfile included in the project
 
-## Testing API Endpoints 
+## Testing API Endpoints
 Endpoint                                        | Description
 ------------                                    | -------------
 (GET)/assets                                    | endpoint to receive a user id and return a list of all the user’s assets
@@ -56,26 +56,19 @@ Endpoint                                        | Description
 
 
 
-Features 
+Features
 - [ ] JWT Authentication, Authorizations 
 - [ ] Testable Endpoints 
 
 
-Package Dependencies 
-- [ ] Gorilla Mux 
-- [ ] GORM Go Orm 
+Package Dependencies
+- [ ] Gorilla Mux
+- [ ] GORM Go Orm
 
 
-Docker Compose Settings 
-https://github.com/kisulken/bulletinApi/blob/master/docker-compose.yml
-
-Initial Implementation
-https://github.com/dedidot/simple-api-golang
-
-Decorators example
-https://gist.github.com/thomasdarimont/31b26f782644c92effd0df3f7b64ef5d
-
-
-
-
-
+[Docker Compose Settings](https://github.com/kisulken/bulletinApi/blob/master/docker-compose.yml)
+[Initial Implementation](https://github.com/dedidot/simple-api-golang)
+[Decorators example](https://gist.github.com/thomasdarimont/31b26f782644c92effd0df3f7b64ef5d)
+[Channels Implementation](https://www.youtube.com/watch?v=7DXQH7bMvZ8)
+[CRUD RESTful API with Go, GORM, JWT, Postgres, Mysql, and Testing](https://levelup.gitconnected.com/crud-restful-api-with-go-gorm-jwt-postgres-mysql-and-testing-460a85ab7121)
+https://github.com/victorsteven/Go-JWT-Postgres-Mysql-Restful-API

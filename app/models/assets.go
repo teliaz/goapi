@@ -10,14 +10,14 @@ import (
 // Assets
 type Asset struct {
 	gorm.Model
-	Id         uint       `gorm:"column:id" json:"id"`
+	Id         uint       `gorm:"primary_key"`
 	Title      string     `gorm:"column:title"`
 	IsFavorite bool       `gorm:"column:isFavorite" json:"isFavorite"`
 	CreatedAt  *time.Time `gorm:"default:null" json:"createdAt"`
 }
 
 func (c *Asset) TableName() string {
-	return "assets"
+	return "Assets"
 }
 
 func (a *Asset) isFavorite(isFavorite bool) {
@@ -31,15 +31,15 @@ func (a *Asset) SetAssetTitle(title string) {
 // Chart Section
 type Chart struct {
 	gorm.Model
+	Id         uint   `gorm:"primary_key"`
 	AssetId    uint   `json:"assetId"`
-	XAxisTitle string `json:"xTitle"`
-	YAxisTitle string `json:"yTitle"`
-	// yAxisTitle string `gorm:"type:ENUM('0', '1', '2', '3');default:'0'" json:"priority"`
+	XAxisTitle string `json:"xAxisTitle"`
+	YAxisTitle string `json:"yAxisTitle"`
 }
 
 // DBMigrate will create and migrate the tables, and then make the some relationships if necessary
 func DBMigrate(db *gorm.DB) *gorm.DB {
 	db.AutoMigrate(&Asset{}, &Chart{})
-	db.Model(&Chart{}).AddForeignKey("AssetId", "assets(id)", "CASCADE", "CASCADE")
+	db.Model(&Chart{}).AddForeignKey("AssetId", "Assets(id)", "CASCADE", "CASCADE")
 	return db
 }
