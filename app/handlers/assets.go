@@ -11,12 +11,14 @@ import (
 	"github.com/teliaz/goapi/app/models"
 )
 
+// GetAssets - Get All Assets
 func GetAssets(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	assets := []models.Asset{}
 	db.Find(&assets)
 	respondJSON(w, http.StatusOK, assets)
 }
 
+// GetAsset - Get Asset by Id
 func GetAsset(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := strconv.ParseUint(vars["id"], 10, 32)
@@ -27,6 +29,7 @@ func GetAsset(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, asset)
 }
 
+// UpdateAssetTitle Set Asset's Title
 func UpdateAssetTitle(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
@@ -43,8 +46,7 @@ func UpdateAssetTitle(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	// &asset.UpdateAssetTitle(title)
-	// TODO: HELLOOOOO
+	asset.SetAssetTitle(vars["title"])
 
 	if err := db.Save(&asset).Error; err != nil {
 		respondError(w, http.StatusInternalServerError, err.Error())
@@ -53,6 +55,7 @@ func UpdateAssetTitle(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, asset)
 }
 
+// UpdateAssetIsFavorite Add/Remove from favorites
 func UpdateAssetIsFavorite(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
@@ -69,14 +72,27 @@ func UpdateAssetIsFavorite(db *gorm.DB, w http.ResponseWriter, r *http.Request) 
 	}
 	defer r.Body.Close()
 
-	// &asset.UpdateAssetTitle(title)
-	// TODO: HELLOOOOO
+	isFavorite, _ := strconv.ParseBool(vars["isFavorite"])
+
+	asset.SetAssetIsFavorite(isFavorite)
 
 	if err := db.Save(&asset).Error; err != nil {
 		respondError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	respondJSON(w, http.StatusOK, asset)
+}
+
+// DeleteAsset Remove Asset by Id
+func DeleteAsset(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, _ := strconv.ParseUint(vars["id"], 10, 32)
+
+	if err := db.Where("Id = ?", id).Remove().Error; err != nil {
+		respondError(w, http.StatusNotFound, err.Error())
+		return
+	}
+	respondJSON(w, http.StatusOK, id)
 }
 
 // Gets an Asset instance if exists, or respond the 404 error otherwise

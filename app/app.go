@@ -46,9 +46,9 @@ func (a *App) setRouters() {
 	// Assets Routes
 	a.Get("/assets", a.handleRequest(handlers.GetAssets))
 	a.Get("/assets/{id:[0-9]+}", a.handleRequest(handlers.GetAsset))
-	a.Put("/assets/{id:[0-9]+}/isFavorite/{isFavorite}", a.handleRequest(handlers.SetAssetFavorite))
+	a.Put("/assets/{id:[0-9]+}/isFavorite/{isFavorite}", a.handleRequest(handlers.UpdateAssetIsFavorite))
 	a.Put("/assets/{id:[0-9]+}/title/{title}", a.handleRequest(handlers.UpdateAssetTitle))
-	a.Delete("/assets/{id:[0-9]+}", a.handleRequest(handlers.DeletAsset))
+	a.Delete("/assets/{id:[0-9]+}", a.handleRequest(handlers.DeleteAsset))
 
 }
 

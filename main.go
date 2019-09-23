@@ -8,9 +8,11 @@ import (
 )
 
 func main() {
+
 	config := config.GetConfig()
 
 	app := &app.App{}
 	app.Initialize(config)
 	log.Fatal(app.Run(":8080")) // In case this port is used elsewhere
+
 }

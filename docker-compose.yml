@@ -4,7 +4,7 @@ services:
 
   db:
     container_name: gwidb
-    image: postgres
+    image: postgres:latest
     hostname: db
     environment:
       GET_HOST_FROM: dns
@@ -35,6 +35,8 @@ services:
     - db
     links:
     - db
+
+# Networks for communication between containers
 networks:
   gwinetwork:
     driver: bridge
