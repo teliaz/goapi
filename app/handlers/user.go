@@ -10,10 +10,9 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
-	"github.com/teliaz/goapi/api/auth"
-	"github.com/teliaz/goapi/api/models"
-	"github.com/teliaz/goapi/api/responses"
-	"github.com/teliaz/goapi/api/utils/formaterror"
+	"github.com/teliaz/goapi/app/auth"
+	"github.com/teliaz/goapi/app/models"
+	"github.com/teliaz/goapi/app/responses"
 )
 
 func CreateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
@@ -37,10 +36,7 @@ func CreateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	userCreated, err := user.SaveUser(db)
 
 	if err != nil {
-
-		formattedError := formaterror.FormatError(err.Error())
-
-		responses.ERROR(w, http.StatusInternalServerError, formattedError)
+		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 	w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.RequestURI, userCreated.ID))
@@ -114,8 +110,7 @@ func UpdateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	updatedUser, err := user.UpdateAUser(db, uint32(uid))
 	if err != nil {
-		formattedError := formaterror.FormatError(err.Error())
-		responses.ERROR(w, http.StatusInternalServerError, formattedError)
+		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 	responses.JSON(w, http.StatusOK, updatedUser)

@@ -70,5 +70,7 @@ Package Dependencies
 [Initial Implementation](https://github.com/dedidot/simple-api-golang)
 [Decorators example](https://gist.github.com/thomasdarimont/31b26f782644c92effd0df3f7b64ef5d)
 [Channels Implementation](https://www.youtube.com/watch?v=7DXQH7bMvZ8)
+
+[Simple-API-Golang](github.com/mingrammer/go-todo-rest-api-example)
 [CRUD RESTful API with Go, GORM, JWT, Postgres, Mysql, and Testing](https://levelup.gitconnected.com/crud-restful-api-with-go-gorm-jwt-postgres-mysql-and-testing-460a85ab7121)
 https://github.com/victorsteven/Go-JWT-Postgres-Mysql-Restful-API
