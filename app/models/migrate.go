@@ -1,9 +1,7 @@
-package models 
+package models
 
 import (
-
 	"github.com/jinzhu/gorm"
-
 )
 
 func DBMigrate(db *gorm.DB) *gorm.DB {

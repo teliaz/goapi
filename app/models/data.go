@@ -7,11 +7,12 @@ import (
 )
 
 type Data struct {
-	ID        uint64    `gorm:"primary_key;auto_increment" json:"id"`
-	HoursSpendOnSocialDaily uint `gorm: json:"hoursSpendDailyOnSocialMedia"`
-	Age 				uint `gorm: json:"hoursSpendDailyOnSocialMedia"`
-	Gender string `gorm: json:"hoursSpendDailyOnSocialMedia"`
-	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	gorm.Model
+	ID                      uint64    `gorm:"primary_key;auto_increment" json:"id"`
+	HoursSpendOnSocialDaily uint      `json:"hoursSpendDailyOnSocialMedia"`
+	Age                     uint      `json:"age"`
+	Gender                  string    `json:"gender"`
+	CreatedAt               time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 }
 
 func (d *Data) SaveData(db *gorm.DB) (*Data, error) {

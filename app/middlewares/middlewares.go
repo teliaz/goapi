@@ -4,26 +4,29 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/jinzhu/gorm"
 	"github.com/teliaz/goapi/app/auth"
 	"github.com/teliaz/goapi/app/responses"
 )
 
-// SetMiddlewareJSON Just Adds Json Content Type
-func SetMiddlewareJSON(next http.HandlerFunc) http.HandlerFunc {
+type RequestHandlerFunction func(db *gorm.DB, w http.ResponseWriter, r *http.Request)
+
+// SetMiddlewareJSON Adds Json Content Type
+func SetMiddlewareJSON(next RequestHandlerFunction, db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		next(w, r)
+		next(db, w, r)
 	}
 }
 
-// SetMiddlewareAuthentication Validates request authentication
-func SetMiddlewareAuthentication(next http.HandlerFunc) http.HandlerFunc {
+// SetMiddlewareAuthentication Validates Tokens
+func SetMiddlewareAuthentication(next RequestHandlerFunction, db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := auth.TokenValid(r)
 		if err != nil {
 			responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
 			return
 		}
-		next(w, r)
+		next(db, w, r)
 	}
 }
