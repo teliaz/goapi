@@ -7,6 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/teliaz/goapi/app/models"
 	"github.com/teliaz/goapi/config"
 )
@@ -19,17 +20,18 @@ type App struct {
 
 // Initialize initializes the app with predefined configuration
 func (a *App) Initialize(config *config.Config) {
-	dbURI := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True",
-		config.DB.Username,
-		config.DB.Password,
+	dbURI := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s",
 		config.DB.Host,
 		config.DB.Port,
+		config.DB.Username,
 		config.DB.Name,
-		config.DB.Charset)
+		config.DB.Password,
+		// config.DB.Charset
+	)
 
 	db, err := gorm.Open(config.DB.Dialect, dbURI)
 	if err != nil {
-		log.Fatal("Could not connect database")
+		log.Fatal("Could not connect database", err)
 	}
 
 	a.DB = models.DBMigrate(db)
@@ -41,13 +43,4 @@ func (a *App) Initialize(config *config.Config) {
 func (a *App) Run(host string) {
 	// In case this port is used
 	log.Fatal(http.ListenAndServe(host, a.Router))
-}
-
-// DBMigrate will create and migrate the tables, and then make the some relationships if necessary
-func DBMigrate(db *gorm.DB) *gorm.DB {
-	db.AutoMigrate(&models.Asset{})
-	db.AutoMigrate(&models.User{})
-	db.AutoMigrate(&models.Data{})
-	// db.Model(&Chart{}).AddForeignKey("AssetId", "Assets(id)", "CASCADE", "CASCADE")
-	return db
 }

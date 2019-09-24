@@ -5,6 +5,8 @@ import (
 )
 
 func DBMigrate(db *gorm.DB) *gorm.DB {
+
+	db.DropTable(&Asset{}, &User{}, &Data{})
 	db.AutoMigrate(&Asset{})
 	db.AutoMigrate(&User{})
 	db.AutoMigrate(&Data{})

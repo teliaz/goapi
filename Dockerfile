@@ -7,13 +7,14 @@ LABEL maintainer="Elias Krontiris <teliaz@gmail.com>"
 # Git is required for fetching the dependencies.
 RUN apk update && apk add --no-cache git
 
-
 RUN mkdir /app 
 ADD . /app/ 
 WORKDIR /app 
-COPY . .
+RUN go get github.com/teliaz/goapi
+
 
 RUN go build -o main . 
+EXPOSE 8080
 CMD ["/app/main"]
 
 

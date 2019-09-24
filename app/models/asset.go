@@ -10,7 +10,6 @@ import (
 )
 
 type Asset struct {
-	gorm.Model
 	ID         uint64    `gorm:"primary_key;auto_increment" json:"id"`
 	Title      string    `gorm:"size:255;not null;unique" json:"title"`
 	IsFavorite bool      `gorm:"not null" json:"isFavorite"`
@@ -32,7 +31,7 @@ func (a *Asset) SaveAsset(db *gorm.DB) (*Asset, error) {
 		return &Asset{}, err
 	}
 	if a.ID != 0 {
-		err = db.Debug().Model(&User{}).Where("id = ?", a.Title).Error
+		err = db.Debug().Model(&Asset{}).Where("id = ?", a.Title).Error
 		if err != nil {
 			return &Asset{}, err
 		}
