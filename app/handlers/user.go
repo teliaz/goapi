@@ -15,6 +15,7 @@ import (
 	"github.com/teliaz/goapi/app/responses"
 )
 
+// CreateUser creates new user
 func CreateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -43,6 +44,7 @@ func CreateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusCreated, userCreated)
 }
 
+// GetUsers All
 func GetUsers(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	user := models.User{}

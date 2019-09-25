@@ -3,10 +3,13 @@ package models
 import (
 	"errors"
 	"html"
+	"net/http"
 	"strings"
 	"time"
 
 	"github.com/jinzhu/gorm"
+	"github.com/teliaz/goapi/app/models"
+	"github.com/teliaz/goapi/app/responses"
 )
 
 type Asset struct {
@@ -22,6 +25,18 @@ func (a *Asset) Prepare() {
 	a.Title = html.EscapeString(strings.TrimSpace(a.Title))
 	a.CreatedAt = time.Now()
 	a.UpdatedAt = time.Now()
+}
+
+func (a *Asset) GetAssets(db *gorm.DB, uid uint64) (*[]Asset, error) {
+	asset := models.Asset{}
+	// TODO get uid
+	// Add Performance improvements
+	assets, err := asset.GetAssets(server.DB, 1)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, assets)
 }
 
 func (a *Asset) SaveAsset(db *gorm.DB) (*Asset, error) {
@@ -56,7 +71,7 @@ func (a *Asset) GetAsset(db *gorm.DB, id uint64) (*Asset, error) {
 
 func (a *Asset) DeleteAsset(db *gorm.DB, id uint64, uid uint32) (int64, error) {
 
-	db = db.Debug().Model(&Asset{}).Where("id = ? and userID = ?", id, uid).Take(&Asset{}).Delete(&Asset{})
+	db = db.Debug().Model(&Asset{}).Where("id = ? and UserID = ?", id, uid).Take(&Asset{}).Delete(&Asset{})
 
 	if db.Error != nil {
 		if gorm.IsRecordNotFoundError(db.Error) {
