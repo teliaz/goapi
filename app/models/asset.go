@@ -3,13 +3,10 @@ package models
 import (
 	"errors"
 	"html"
-	"net/http"
 	"strings"
 	"time"
 
 	"github.com/jinzhu/gorm"
-	"gwiapi/app/models"
-	"gwiapi/app/responses"
 )
 
 type Asset struct {
@@ -28,15 +25,14 @@ func (a *Asset) Prepare() {
 }
 
 func (a *Asset) GetAssets(db *gorm.DB, uid uint64) (*[]Asset, error) {
-	asset := models.Asset{}
+	asset := Asset{}
 	// TODO get uid
 	// Add Performance improvements
-	assets, err := asset.GetAssets(server.DB, 1)
+	assets, err := asset.GetAssets(db, 1)
 	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
+		return nil, err
 	}
-	responses.JSON(w, http.StatusOK, assets)
+	return assets, nil
 }
 
 func (a *Asset) SaveAsset(db *gorm.DB) (*Asset, error) {
