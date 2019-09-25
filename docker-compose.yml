@@ -28,7 +28,7 @@ services:
     networks:
     - gwinetwork
     #volumes:
-    #- .:/go/src/github.com/teliaz/goapi
+    #- .:/go/src/gwiapi
     ports:
     - 8080:8080
     depends_on:

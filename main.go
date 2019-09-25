@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/teliaz/goapi/app"
-	"github.com/teliaz/goapi/config"
+	"gwiapi/app"
+	"gwiapi/config"
 )
 
 func main() {

@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/jinzhu/gorm"
-	"github.com/teliaz/goapi/app/auth"
-	"github.com/teliaz/goapi/app/responses"
+	"gwiapi/app/auth"
+	"gwiapi/app/responses"
 )
 
 type RequestHandlerFunction func(db *gorm.DB, w http.ResponseWriter, r *http.Request)

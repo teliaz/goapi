@@ -6,9 +6,9 @@ import (
 	"net/http"
 
 	"github.com/jinzhu/gorm"
-	"github.com/teliaz/goapi/app/auth"
-	"github.com/teliaz/goapi/app/models"
-	"github.com/teliaz/goapi/app/responses"
+	"gwiapi/app/auth"
+	"gwiapi/app/models"
+	"gwiapi/app/responses"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -40,6 +40,7 @@ func Login(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, token)
 }
 
+// SignIn Helper func to Check Password
 func SignIn(db *gorm.DB, email, password string) (string, error) {
 
 	var err error

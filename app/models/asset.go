@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
-	"github.com/teliaz/goapi/app/models"
-	"github.com/teliaz/goapi/app/responses"
+	"gwiapi/app/models"
+	"gwiapi/app/responses"
 )
 
 type Asset struct {

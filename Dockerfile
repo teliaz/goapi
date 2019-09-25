@@ -10,7 +10,7 @@ RUN apk update && apk add --no-cache git
 RUN mkdir /app 
 ADD . /app/ 
 WORKDIR /app 
-RUN go get github.com/teliaz/goapi
+RUN go get gwiapi
 
 
 RUN go build -o main . 

@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/jinzhu/gorm"
-	"github.com/teliaz/goapi/app/handlers"
-	"github.com/teliaz/goapi/app/middlewares"
+	"gwiapi/app/handlers"
+	"gwiapi/app/middlewares"
 )
 
 func (a *App) setRouters() {

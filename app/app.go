@@ -8,8 +8,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/teliaz/goapi/app/models"
-	"github.com/teliaz/goapi/config"
+	"gwiapi/app/models"
+	"gwiapi/config"
 )
 
 // App Structure

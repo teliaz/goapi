@@ -5,34 +5,41 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/teliaz/goapi/config"
+	"gwiapi/config"
 )
 
-func CreateToken(user_id uint32) (string, error) {
+// CreateToken Generates a token
+func CreateToken(uid uint32) (string, error) {
+	var config *config.Config
+	expirationInMinutes := config.AUTH.ExpirationMinutes
+	hmacSecret := config.AUTH.HmacSecret
+
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
-	claims["user_id"] = user_id
-	claims["exp"] = time.Now().Add(time.Hour * 1).Unix() //Token expires after 1 hour
+	claims["uid"] = uid
+	claims["exp"] = time.Now().Add(time.Minute * time.Duration(expirationInMinutes)).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(os.Getenv("API_SECRET")))
+	return token.SignedString([]byte(hmacSecret))
 
 }
 
+// TokenValid Checks is Token provided is Valid
 func TokenValid(r *http.Request) error {
+	var config *config.Config
+	hmacSecret := config.AUTH.HmacSecret
+
 	tokenString := ExtractToken(r)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
-		var config *config.Config
-		secret := config.AUTH.HmacSecret
-		return []byte(secret), nil
+
+		return []byte(hmacSecret), nil
 	})
 	if err != nil {
 		return err
@@ -43,6 +50,7 @@ func TokenValid(r *http.Request) error {
 	return nil
 }
 
+// ExtractToken Extracts "token" from Request Authorization Header
 func ExtractToken(r *http.Request) string {
 	keys := r.URL.Query()
 	token := keys.Get("token")
@@ -56,25 +64,29 @@ func ExtractToken(r *http.Request) string {
 	return ""
 }
 
-func ExtractTokenID(r *http.Request) (uint32, error) {
+// ExtractTokenID Extracts "uid" from Request authorization header
+func ExtractTokenID(r *http.Request) (uint64, error) {
+
+	var config *config.Config
+	hmacSecret := config.AUTH.HmacSecret
 
 	tokenString := ExtractToken(r)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(os.Getenv("API_SECRET")), nil
+		return []byte(hmacSecret), nil
 	})
 	if err != nil {
 		return 0, err
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
-		uid, err := strconv.ParseUint(fmt.Sprintf("%.0f", claims["user_id"]), 10, 32)
+		uid, err := strconv.ParseUint(fmt.Sprintf("%.0f", claims["user_id"]), 10, 64)
 		if err != nil {
 			return 0, err
 		}
-		return uint32(uid), nil
+		return uint64(uid), nil
 	}
 	return 0, nil
 }

@@ -10,9 +10,9 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
-	"github.com/teliaz/goapi/app/auth"
-	"github.com/teliaz/goapi/app/models"
-	"github.com/teliaz/goapi/app/responses"
+	"gwiapi/app/auth"
+	"gwiapi/app/models"
+	"gwiapi/app/responses"
 )
 
 // CreateUser creates new user
@@ -61,13 +61,13 @@ func GetUsers(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 func GetUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
-	uid, err := strconv.ParseUint(vars["id"], 10, 32)
+	uid, err := strconv.ParseUint(vars["id"], 10, 64)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
 	user := models.User{}
-	userGotten, err := user.FindUserByID(db, uint32(uid))
+	userGotten, err := user.FindUserByID(db, uint64(uid))
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
@@ -100,7 +100,7 @@ func UpdateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
 		return
 	}
-	if tokenID != uint32(uid) {
+	if tokenID != uint64(uid) {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New(http.StatusText(http.StatusUnauthorized)))
 		return
 	}
@@ -110,7 +110,7 @@ func UpdateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	updatedUser, err := user.UpdateAUser(db, uint32(uid))
+	updatedUser, err := user.UpdateAUser(db, uint64(uid))
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
@@ -135,11 +135,11 @@ func DeleteUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
 		return
 	}
-	if tokenID != 0 && tokenID != uint32(uid) {
+	if tokenID != 0 && tokenID != uint64(uid) {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New(http.StatusText(http.StatusUnauthorized)))
 		return
 	}
-	_, err = user.DeleteAUser(db, uint32(uid))
+	_, err = user.DeleteAUser(db, uint64(uid))
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
