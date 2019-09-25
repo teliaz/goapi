@@ -10,12 +10,12 @@ RUN apk update && apk add --no-cache git
 RUN mkdir /app 
 ADD . /app/ 
 WORKDIR /app 
-RUN go get gwiapi
 
 
-RUN go build -o main . 
+
+RUN go build -o gwiapi . 
 EXPOSE 8080
-CMD ["/app/main"]
+CMD ["/app/gwiapi"]
 
 
 # Set the current working directory inside the container 

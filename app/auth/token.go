@@ -9,12 +9,13 @@ import (
 	"strings"
 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
 	"gwiapi/config"
+
+	jwt "github.com/dgrijalva/jwt-go"
 )
 
 // CreateToken Generates a token
-func CreateToken(uid uint32) (string, error) {
+func CreateToken(uid uint64) (string, error) {
 	var config *config.Config
 	expirationInMinutes := config.AUTH.ExpirationMinutes
 	hmacSecret := config.AUTH.HmacSecret
