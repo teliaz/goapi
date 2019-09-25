@@ -4,11 +4,13 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/jinzhu/gorm"
 	"gwiapi/app/auth"
 	"gwiapi/app/responses"
+
+	"github.com/jinzhu/gorm"
 )
 
+// RequestHandlerFunction Overloading HandlerFunc with db
 type RequestHandlerFunction func(db *gorm.DB, w http.ResponseWriter, r *http.Request)
 
 // SetMiddlewareJSON Adds Json Content Type
