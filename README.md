@@ -40,37 +40,35 @@ $ docker-compose up
 
 Dockerfile included in the project
 
-## Testing API Endpoints
+## API Routes table
 Endpoint                                        | Description
 ------------                                    | -------------
 (GET)/assets                                    | endpoint to receive a user id and return a list of all the user’s assets
 (POST)/assets/{id}/favorite/{bool}              | endpoints that would add an asset to favourites, remove it
 (PUT)/assets/{id}/description                   | edit its description
 
+Challenge Keypoints
 
-
-[] Note that users have no limit on how many assets they want on their favourites so your service will need to provide a reasonable response time
-[] Useful and passing tests would be also be viewed favourably
-[] A working server application with functional API is required
-[] It is appreciated, though not required, if a Dockerfile is included.
-
-
+- [x] A working server application with functional API is required
+- [x] It is appreciated, though not required, if a Dockerfile is included.
+- [ ] Note that users have no limit on how many assets they want on their favourites so your service will need to provide a reasonable response time
+- [ ] Useful and passing tests would be also be viewed favourably
 
 Features
-- [ ] JWT Authentication, Authorizations 
-- [ ] Testable Endpoints 
+
+- [x] JWT Authentication, Authorizations
+- [ ] ORM Implementation
+- [ ] Testable Endpoints
+
+Package Used
+
+- [x] Gorilla Mux
+- [x] GORM Go Orm
 
 
-Package Dependencies
-- [ ] Gorilla Mux
-- [ ] GORM Go Orm
-
-
-[Docker Compose Settings](https://github.com/kisulken/bulletinApi/blob/master/docker-compose.yml)
-[Initial Implementation](https://github.com/dedidot/simple-api-golang)
-[Decorators example](https://gist.github.com/thomasdarimont/31b26f782644c92effd0df3f7b64ef5d)
-[Channels Implementation](https://www.youtube.com/watch?v=7DXQH7bMvZ8)
-
-[Simple-API-Golang](github.com/mingrammer/go-todo-rest-api-example)
-[CRUD RESTful API with Go, GORM, JWT, Postgres, Mysql, and Testing](https://levelup.gitconnected.com/crud-restful-api-with-go-gorm-jwt-postgres-mysql-and-testing-460a85ab7121)
-https://github.com/victorsteven/Go-JWT-Postgres-Mysql-Restful-API
+- [Docker Compose Settings](https://github.com/kisulken/bulletinApi/blob/master/docker-compose.yml)
+- [Initial Implementation](https://github.com/dedidot/simple-api-golang)
+- [Decorators example](https://gist.github.com/thomasdarimont/31b26f782644c92effd0df3f7b64ef5d)
+- [Channels Implementation](https://www.youtube.com/watch?v=7DXQH7bMvZ8)
+- [Simple-API-Golang](github.com/mingrammer/go-todo-rest-api-example)
+- [CRUD RESTful API with Go, GORM, JWT, Postgres, Mysql, and Testing](https://github.com/victorsteven/Go-JWT-Postgres-Mysql-Restful-API)

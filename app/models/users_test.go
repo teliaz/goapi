@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func HashTest(t *testing.T) {
+func HashTest(t *testing.T) error {
 	// t.
-
+	return nil
 }

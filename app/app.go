@@ -5,11 +5,12 @@ import (
 	"log"
 	"net/http"
 
+	"gwiapi/app/models"
+	"gwiapi/config"
+
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"gwiapi/app/models"
-	"gwiapi/config"
 )
 
 // App Structure
@@ -41,6 +42,7 @@ func (a *App) Initialize(config *config.Config) {
 
 // Run the app on Mux router
 func (a *App) Run(host string) {
+	fmt.Printf("Serving on http://127.0.0.1%s", host)
 	// In case this port is used
 	log.Fatal(http.ListenAndServe(host, a.Router))
 }
