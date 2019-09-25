@@ -16,7 +16,7 @@ import (
 
 // CreateToken Generates a token
 func CreateToken(uid uint64) (string, error) {
-	var config *config.Config
+	config := config.GetConfig()
 	expirationInMinutes := config.AUTH.ExpirationMinutes
 	hmacSecret := config.AUTH.HmacSecret
 
@@ -31,16 +31,14 @@ func CreateToken(uid uint64) (string, error) {
 
 // TokenValid Checks is Token provided is Valid
 func TokenValid(r *http.Request) error {
-	var config *config.Config
-	hmacSecret := config.AUTH.HmacSecret
-
+	config := config.GetConfig()
 	tokenString := ExtractToken(r)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return []byte(hmacSecret), nil
+		return []byte(config.AUTH.HmacSecret), nil
 	})
 	if err != nil {
 		return err
@@ -68,15 +66,15 @@ func ExtractToken(r *http.Request) string {
 // ExtractTokenID Extracts "uid" from Request authorization header
 func ExtractTokenID(r *http.Request) (uint64, error) {
 
-	var config *config.Config
-	hmacSecret := config.AUTH.HmacSecret
+	config := config.GetConfig()
+	fmt.Println("Secret is ", config.AUTH.HmacSecret)
 
 	tokenString := ExtractToken(r)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(hmacSecret), nil
+		return []byte(config.AUTH.HmacSecret), nil
 	})
 	if err != nil {
 		return 0, err

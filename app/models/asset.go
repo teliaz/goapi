@@ -17,6 +17,10 @@ type Asset struct {
 	UpdatedAt  time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
 
+func (a *Asset) TableName() string {
+	return "Assets"
+}
+
 func (a *Asset) Prepare() {
 	a.ID = 0
 	a.Title = html.EscapeString(strings.TrimSpace(a.Title))
@@ -76,4 +80,41 @@ func (a *Asset) DeleteAsset(db *gorm.DB, id uint64, uid uint32) (int64, error) {
 		return 0, db.Error
 	}
 	return db.RowsAffected, nil
+}
+
+// Chart Section
+type Chart struct {
+	ID         uint   `gorm:"primary_key"`
+	AssetId    uint   `json:"assetId"`
+	XAxisTitle string `json:"xAxisTitle"`
+	YAxisTitle string `json:"yAxisTitle"`
+}
+
+func (c *Chart) TableName() string {
+	return "Charts"
+}
+
+// Insight Section
+type Insight struct {
+	ID                 uint64 `gorm:"primary_key"`
+	AssetId            uint64 `json:"assetId"`
+	InsightDescription string `json:"insightDescription"`
+}
+
+func (i *Insight) TableName() string {
+	return "Insights"
+}
+
+// Audience Section
+type Audience struct {
+	ID                           uint64 `gorm:"primary_key"`
+	AssetId                      uint64 `json:"assetId"`
+	Gender                       string `json:"insightDescription"`
+	BirthCountry                 string `json:"birthCountry"`
+	AgeGroup                     string `json:"ageGroup"`
+	HoursSpentDailyOnSocialMedia uint   `json:"hoursSpentDailyOnSocialMedia"`
+}
+
+func (a *Audience) TableName() string {
+	return "Audiences"
 }

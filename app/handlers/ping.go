@@ -4,8 +4,9 @@ import (
 	"net/http"
 	"time"
 
+	"gwiapi/app/responses"
+
 	"github.com/jinzhu/gorm"
-	"github.com/teliaz/goapi/app/responses"
 )
 
 // Ping will respond with Time of Call

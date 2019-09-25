@@ -14,6 +14,10 @@ type Data struct {
 	CreatedAt               time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 }
 
+func (data *Data) TableName() string {
+	return "Data"
+}
+
 func (d *Data) SaveData(db *gorm.DB) (*Data, error) {
 	err := db.Debug().Model(&Data{}).Create(&d).Error
 	if err != nil {
