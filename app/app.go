@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"gwiapi/app/mock"
 	"gwiapi/app/models"
 	"gwiapi/config"
 
@@ -35,7 +36,13 @@ func (a *App) Initialize(config *config.Config) {
 		log.Fatal("Could not connect database", err)
 	}
 
-	a.DB = models.DBMigrate(db)
+	a.DB = databaseMigrate(db)
+	databaseSeed(db)
+
+	// fmt.Println("Database Migration Started")
+	// a.DB = models.DBMigrate(db)
+	// fmt.Println("Database Migration Completed")
+
 	a.Router = mux.NewRouter()
 	a.setRouters()
 }
@@ -45,4 +52,16 @@ func (a *App) Run(host string) {
 	fmt.Printf("Serving on http://127.0.0.1%s", host)
 	// In case this port is used
 	log.Fatal(http.ListenAndServe(host, a.Router))
+}
+
+func databaseMigrate(db *gorm.DB) *gorm.DB {
+	fmt.Println("Database Migration Started")
+	defer fmt.Println("Database Migration Completed")
+	return models.DBMigrate(db)
+}
+
+func databaseSeed(db *gorm.DB) {
+	fmt.Println("Database Seeding Started")
+	defer fmt.Println("Database Seeding Completed")
+	mock.Seed(db)
 }

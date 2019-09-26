@@ -9,13 +9,13 @@ import (
 type Participant struct {
 	ID                      uint64    `gorm:"primary_key;auto_increment" json:"id"`
 	HoursSpendOnSocialDaily uint8     `json:"hoursSpendDailyOnSocialMedia"`
-	Age                     uint8     `json:"age"`
+	Age                     uint8     `gorm:"size:1" json:"age"`
 	Gender                  string    `json:"gender"`
 	CreatedAt               time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 }
 
 func (p *Participant) TableName() string {
-	return "Participants"
+	return "participants"
 }
 
 func (p *Participant) SaveParticipant(db *gorm.DB) (*Participant, error) {
