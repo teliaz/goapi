@@ -21,7 +21,7 @@ type User struct {
 }
 
 func (user *User) TableName() string {
-	return "Users"
+	return "users"
 }
 
 func Hash(password string) ([]byte, error) {

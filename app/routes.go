@@ -3,9 +3,10 @@ package app
 import (
 	"net/http"
 
-	"github.com/jinzhu/gorm"
 	"gwiapi/app/handlers"
 	"gwiapi/app/middlewares"
+
+	"github.com/jinzhu/gorm"
 )
 
 func (a *App) setRouters() {
@@ -13,15 +14,20 @@ func (a *App) setRouters() {
 	// Health Check
 	a.Get("/", middlewares.SetMiddlewareJSON(handlers.Ping, a.DB))
 
-	// Login Route
-	a.Post("/login", middlewares.SetMiddlewareJSON(handlers.Login, a.DB))
+	// Auth Routes
+	a.Post("/auth/signup", middlewares.SetMiddlewareJSON(handlers.CreateUser, a.DB))
+	a.Post("/auth/login", middlewares.SetMiddlewareJSON(handlers.Login, a.DB))
 
-	//Users routes
-	a.Post("/users", middlewares.SetMiddlewareAuthentication(handlers.CreateUser, a.DB))
+	// Users routes
 	a.Get("/users", middlewares.SetMiddlewareAuthentication(handlers.GetUsers, a.DB))
 	a.Get("/users/{id}", middlewares.SetMiddlewareAuthentication(handlers.GetUser, a.DB))
 	a.Put("/users/{id}", middlewares.SetMiddlewareAuthentication(handlers.UpdateUser, a.DB))
 	a.Delete("/users/{id}", middlewares.SetMiddlewareAuthentication(handlers.DeleteUser, a.DB))
+
+	// Assets Routes
+	a.Get("/assets", middlewares.SetMiddlewareAuthentication(handlers.GetAssets, a.DB))
+	a.Get("/assets/{page:[0-9]+}", middlewares.SetMiddlewareAuthentication(handlers.GetAssets, a.DB))
+	a.Get("/assets/favorites", middlewares.SetMiddlewareAuthentication(handlers.GetAssets, a.DB))
 
 }
 

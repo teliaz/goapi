@@ -5,17 +5,18 @@ import (
 
 	// "time"
 
-	"github.com/jinzhu/gorm"
 	"gwiapi/app/auth"
 	"gwiapi/app/models"
 	"gwiapi/app/responses"
+
+	"github.com/jinzhu/gorm"
 )
 
 // GetAssets will bring asset of the user
 func GetAssets(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	asset := models.Asset{}
 
-	// Select only User Assets
+	// Select only User Assets from Token
 	uid, err := auth.ExtractTokenID(r)
 
 	assets, err := asset.GetAssets(db, uid)

@@ -8,11 +8,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gorilla/mux"
-	"github.com/jinzhu/gorm"
 	"gwiapi/app/auth"
 	"gwiapi/app/models"
 	"gwiapi/app/responses"
+
+	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
 )
 
 // CreateUser creates new user

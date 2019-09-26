@@ -7,6 +7,5 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gorilla/mux v1.7.3
 	github.com/jinzhu/gorm v1.9.10
-	golang.org/dl v0.0.0-20190916174333-7d514fe8af3a // indirect
 	golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c
 )

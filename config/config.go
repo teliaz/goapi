@@ -34,7 +34,7 @@ func GetConfig() *Config {
 		AUTH: &AuthConfig{
 			// https://mkjwk.org
 			HmacSecret:        []byte("z5qkREmStJx-IFI96YH8V7jivw78FTk6ZCtDCtq-RsYik6WopxYODgZTlWxUd_jjs6-X041ZdDn4p27lWuY3fQ"),
-			ExpirationMinutes: 60 * 24,
+			ExpirationMinutes: 60 * 24 * 7, // 7 days
 		},
 	}
 }

@@ -1,11 +1,13 @@
-# GoLang API 
+# GoLang API
 
-## Introduction 
-Since I'm new to GO programming language I took some time to scratch on the basics 
-- [Go by Example](https://gobyexample.com), 
+## Introduction
+
+Since I'm new to GO programming language I took some time to scratch on the basics
+
+- [Go by Example](https://gobyexample.com)
 - [A tour of Go](https://tour.golang.org)
 
-Then dove in on the following 
+Then dove in on the following
 
 - [Functional Programming in Go](https://medium.com/@geisonfgfg/functional-go-bc116f4c96a4)
 - [Solid Design in GO](https://dave.cheney.net/2016/08/20/solid-go-design)
@@ -19,28 +21,21 @@ Then dove in on the following
 - [How to automatically handle vendor folder with godep](https://github.com/tools/godep)
 - [How to structure your Go Applications](https://www.youtube.com/watch?v=VQym87o91f8)
 - [Concurrency made easy](https://www.youtube.com/watch?v=DqHb5KBe7qI)
-
-## Dependencies (Installation & Run)
-```bash
-# Mux Router
-$ go get github.com/gorilla/mux
-# Gorm Orm
-$ go get github.com/jinzhu/gorm
-```
-
-
+- [GopherCon2017 - Understanding Channels](https://www.youtube.com/watch?v=KBZlN0izeiY)
 
 ## Docker Guideline
-To run the API use the following:
-```bash 
-$ docker-compose -f ./docker-compose.yml up -d
 
-$ docker-compose up
+To run the API use the following:
+
+```bash
+docker-compose -f ./docker-compose.yml up -d
+docker-compose build up
 ```
 
 Dockerfile included in the project
 
 ## API Routes table
+
 Endpoint                                        | Description
 ------------                                    | -------------
 (GET)/assets                                    | endpoint to receive a user id and return a list of all the user’s assets
@@ -60,11 +55,13 @@ Features
 - [ ] ORM Implementation
 - [ ] Testable Endpoints
 
-Package Used
+External Packages Used
 
-- [x] Gorilla Mux
-- [x] GORM Go Orm
+- [x] Gorilla Mux - Router
+- [x] GORM - A Go ORM
+- [x] Dgrijalva JWT - JSON Web Token Library
 
+Some other resources
 
 - [Docker Compose Settings](https://github.com/kisulken/bulletinApi/blob/master/docker-compose.yml)
 - [Initial Implementation](https://github.com/dedidot/simple-api-golang)

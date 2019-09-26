@@ -18,7 +18,7 @@ type Asset struct {
 }
 
 func (a *Asset) TableName() string {
-	return "Assets"
+	return "assets"
 }
 
 func (a *Asset) Prepare() {
@@ -30,9 +30,8 @@ func (a *Asset) Prepare() {
 
 func (a *Asset) GetAssets(db *gorm.DB, uid uint64) (*[]Asset, error) {
 	asset := Asset{}
-	// TODO get uid
 	// Add Performance improvements
-	assets, err := asset.GetAssets(db, 1)
+	assets, err := asset.GetAssets(db, uid)
 	if err != nil {
 		return nil, err
 	}
@@ -40,8 +39,7 @@ func (a *Asset) GetAssets(db *gorm.DB, uid uint64) (*[]Asset, error) {
 }
 
 func (a *Asset) SaveAsset(db *gorm.DB) (*Asset, error) {
-	var err error
-	err = db.Debug().Model(&Asset{}).Create(&a).Error
+	err := db.Debug().Model(&Asset{}).Create(&a).Error
 	if err != nil {
 		return &Asset{}, err
 	}
@@ -54,14 +52,13 @@ func (a *Asset) SaveAsset(db *gorm.DB) (*Asset, error) {
 	return a, nil
 }
 
-func (a *Asset) GetAsset(db *gorm.DB, id uint64) (*Asset, error) {
-	var err error
-	err = db.Debug().Model(&Asset{}).Where("id = ?", id).Take(&a).Error
+func (a *Asset) GetAsset(db *gorm.DB, id uint64, uid uint64) (*Asset, error) {
+	err := db.Debug().Model(&Asset{}).Where("id = ? and userId = ?", id, uid).Take(&a).Error
 	if err != nil {
 		return &Asset{}, err
 	}
 	if a.ID != 0 {
-		err = db.Debug().Model(&Asset{}).Where("id = ?", a.Title).Error
+		err = db.Debug().Model(&Asset{}).Where("id = ? and userId = ?", a.Title).Error
 		if err != nil {
 			return &Asset{}, err
 		}
@@ -91,7 +88,7 @@ type Chart struct {
 }
 
 func (c *Chart) TableName() string {
-	return "Charts"
+	return "charts"
 }
 
 // Insight Section
@@ -102,7 +99,7 @@ type Insight struct {
 }
 
 func (i *Insight) TableName() string {
-	return "Insights"
+	return "insights"
 }
 
 // Audience Section
@@ -116,5 +113,5 @@ type Audience struct {
 }
 
 func (a *Audience) TableName() string {
-	return "Audiences"
+	return "audiences"
 }

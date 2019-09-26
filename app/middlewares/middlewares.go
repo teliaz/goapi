@@ -26,6 +26,7 @@ func SetMiddlewareAuthentication(next RequestHandlerFunction, db *gorm.DB) http.
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := auth.TokenValid(r)
 		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
 			responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
 			return
 		}
