@@ -5,10 +5,11 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/jinzhu/gorm"
 	"gwiapi/app/auth"
 	"gwiapi/app/models"
 	"gwiapi/app/responses"
+
+	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -45,15 +46,15 @@ func SignIn(db *gorm.DB, email, password string) (string, error) {
 
 	var err error
 
-	user := models.User{}
+	userFound := models.User{}
 
-	err = db.Debug().Model(models.User{}).Where("email = ?", email).Take(&user).Error
+	err = db.Debug().Model(models.User{}).Where("email = ?", email).Take(&userFound).Error
 	if err != nil {
 		return "", err
 	}
-	err = models.VerifyPassword(user.Password, password)
+	err = models.VerifyPassword(userFound.Password, password)
 	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
 		return "", err
 	}
-	return auth.CreateToken(user.ID)
+	return auth.CreateToken(userFound.ID)
 }

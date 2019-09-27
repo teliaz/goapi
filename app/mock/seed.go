@@ -72,16 +72,16 @@ func seedUsers(db *gorm.DB) error {
 	users := []models.User{
 		{
 			Email:    "user1@example.com",
-			Password: "password",
+			Password: "secretpassword1",
 		},
 		{
 			Email:    "user2@example.com",
-			Password: "password",
+			Password: "secretpassword2",
 		},
 	}
 	for _, u := range users {
 		u.Prepare()
-		u.BeforeSave()
+		u.Validate("")
 		err := db.Model(&models.User{}).Create(&u).Error
 		if err != nil {
 			return err
@@ -121,6 +121,30 @@ func seedAssets(db *gorm.DB) error {
 			HoursComparator: "<=",
 			HoursReference:  1,
 		},
+		models.Insight{
+			Gender:          "f",
+			BirthCountry:    "US",
+			HoursComparator: "<=",
+			HoursReference:  1,
+		},
+		models.Insight{
+			Gender:          "f",
+			BirthCountry:    "",
+			HoursComparator: ">",
+			HoursReference:  5,
+		},
+		models.Insight{
+			Gender:          "m",
+			BirthCountry:    "",
+			HoursComparator: ">",
+			HoursReference:  6,
+		},
+		models.Insight{
+			Gender:          "",
+			BirthCountry:    "GR",
+			HoursComparator: ">",
+			HoursReference:  6,
+		},
 	}
 	for _, i := range insights {
 		uid := uint32(rand.Intn(2) + 1)
@@ -141,6 +165,30 @@ func seedAssets(db *gorm.DB) error {
 			AgeFrom:     20,
 			AgeTo:       25,
 			CountryCode: "",
+			Gender:      "f",
+		},
+		models.Audience{
+			AgeFrom:     25,
+			AgeTo:       30,
+			CountryCode: "GR",
+			Gender:      "",
+		},
+		models.Audience{
+			AgeFrom:     25,
+			AgeTo:       30,
+			CountryCode: "US",
+			Gender:      "",
+		},
+		models.Audience{
+			AgeFrom:     30,
+			AgeTo:       35,
+			CountryCode: "GR",
+			Gender:      "",
+		},
+		models.Audience{
+			AgeFrom:     30,
+			AgeTo:       35,
+			CountryCode: "GR",
 			Gender:      "f",
 		},
 		models.Audience{

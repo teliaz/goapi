@@ -26,11 +26,15 @@ func (a *App) setRouters() {
 
 	// Assets Routes
 	a.Get("/assets", middlewares.SetMiddlewareAuthentication(handlers.GetAssets, a.DB))
-	a.Get("/assets/{page:[0-9]+}", middlewares.SetMiddlewareAuthentication(handlers.GetAssets, a.DB))
-	a.Get("/assets/favorites", middlewares.SetMiddlewareAuthentication(handlers.GetAssets, a.DB))
+	a.Get("/assets/{id:[0-9]+}", middlewares.SetMiddlewareAuthentication(handlers.GetAsset, a.DB))
+	a.Patch("/assets/{id:[0-9]+}", middlewares.SetMiddlewareAuthentication(handlers.UpdateAsset, a.DB))
+	a.Post("/assets/charts", middlewares.SetMiddlewareAuthentication(handlers.CreateAssetChart, a.DB))
+	a.Post("/assets/insights", middlewares.SetMiddlewareAuthentication(handlers.CreateAssetInsight, a.DB))
+	a.Post("/assets/audiences", middlewares.SetMiddlewareAuthentication(handlers.CreateAssetAudience, a.DB))
 
 	// Participants
 	a.Get("/participants", middlewares.SetMiddlewareAuthentication(handlers.GetParticipants, a.DB))
+	a.Post("/participants", middlewares.SetMiddlewareAuthentication(handlers.AddParticipant, a.DB))
 	a.Get("/countries", middlewares.SetMiddlewareJSON(handlers.GetCountries, a.DB))
 
 }

@@ -12,13 +12,14 @@ import (
 type Asset struct {
 	ID             uint32 `gorm:"primary_key;auto_increment" json:"id"`
 	UserID         uint32 `json:"uid"`
-	IsFavorite     bool   `gorm:"not null" json:"isFavorite"`
+	IsFavorite     bool   `gorm:"not null" json:"is_favorite"`
 	Title          string `gorm:"size:255;not null" json:"title"`
 	TitleGenerated string `gorm:"-" json:"title_generated"`
+	AssetType      string `gorm:"size:15;not null" json:"asset_type"`
 
-	Chart    ChartDetails    `json:"chart"`
-	Insight  InsightDetails  `json:"insight"`
-	Audience AudienceDetails `json:"audience"`
+	Chart    *ChartDetails    `json:"chart"`
+	Insight  *InsightDetails  `json:"insight"`
+	Audience *AudienceDetails `json:"audience"`
 
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
@@ -35,9 +36,9 @@ func (a *Asset) Prepare() {
 	a.UpdatedAt = time.Now()
 }
 
-func (a *Asset) GetAssets(db *gorm.DB, uid uint32) (*[]Asset, error) {
+func (a *Asset) GetAssets(db *gorm.DB, uid uint32, page, itemsPerPage uint32) (*[]Asset, error) {
 	assets := []Asset{}
-	err := db.Debug().Model(&Asset{}).Limit(100).Order("created_at DESC").Where("user_id = ?", uid).Find(&assets).Error
+	err := db.Debug().Model(&Asset{}).Order("updated_at DESC").Offset((page-1)*itemsPerPage).Limit(itemsPerPage).Where("user_id = ?", uid).Find(&assets).Error
 	if err != nil {
 		return &[]Asset{}, err
 	}
@@ -99,6 +100,7 @@ func (c *Chart) TableName() string {
 func (c *Chart) CreateAssetChart(db *gorm.DB, uid uint32) (*Asset, *Chart, error) {
 	asset := &Asset{}
 	asset.UserID = uid
+	asset.AssetType = "chart"
 	asset, err := asset.SaveAsset(db, uid)
 	if err != nil {
 		return nil, nil, err
@@ -130,6 +132,7 @@ func (a *Audience) TableName() string {
 func (a *Audience) CreateAssetAudience(db *gorm.DB, uid uint32) (*Asset, *Audience, error) {
 	asset := &Asset{}
 	asset.UserID = uid
+	asset.AssetType = "audience"
 	asset, err := asset.SaveAsset(db, uid)
 	if err != nil {
 		return nil, nil, err
@@ -161,6 +164,7 @@ func (i *Insight) TableName() string {
 func (i *Insight) CreateAssetInsight(db *gorm.DB, uid uint32) (*Asset, *Insight, error) {
 	asset := &Asset{}
 	asset.UserID = uid
+	asset.AssetType = "insight"
 	asset, err := asset.SaveAsset(db, uid)
 	if err != nil {
 		return nil, nil, err
