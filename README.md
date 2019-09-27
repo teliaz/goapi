@@ -1,4 +1,4 @@
-# GlobalWebIndex Engineering Challenge
+# GlobalWebIndex Engineering Challenge - Elias Krontiris Submission
 
 ## Introduction
 
@@ -25,17 +25,17 @@ Then dove in on the following
 
 ## Problem Analysis
 
-After reading carefully the challenge goals all assets (charts, insights, audience) could generate data from a single sample data-table. Guessing the Age, Gender, Country are demographic information and the only metric is the "hours spend on social media", I added the "Participants" schema and seeded mock data into this table.
-Age(10-80), Gender(2) and Country(259) are randomly seeded values and "hours spend on social media" is based on a normal distribution with a spike on 0-2 hours daily, based on a personal estimation.
+After reading carefully the challenge goals all assets (charts, insights, audience) could generate data from a single sample data-table. Guessing the Age, Gender, Country are demographic information and the only metric is the "hours spent on social media", I added the "Participants" schema and seeded mock data into this table.
+Age(10-80), Gender(2) and Country(259) are randomly seeded values and "hours spent on social media" is based on a normal distribution with a spike on 0-2 hours daily, based on a personal estimation.
 
-I should note that I fully understand that this is out of this challenge scope and lacks performance, since all *Assets* are calculated based on live data and usualy should be pre-calculated and transformed.
+I should note that I fully understand that this is out of this challenge's scope and lacks performance, since all *Assets* are calculated based on live data and usually should be exported based on pre-calculated and transformed schemas.
 
 ## API Routes table
 
 Endpoint                                        | Description
 ------------                                    | -------------
 (POST)/auth/signup                              | endpoint to create a user
-(POST)/auth/login                               | authorize and retuen json web token
+(POST)/auth/login                               | authorize and return json web token
 (GET)/assets                                    | based on the token returns all user's assets
 (GET)/asset/{id}                                | get specific asset by id
 (PUT)/assets/{id}/favorite/{bool}               | add an asset to favourites or remove it
