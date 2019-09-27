@@ -15,7 +15,7 @@ import (
 )
 
 // CreateToken Generates a token
-func CreateToken(uid uint64) (string, error) {
+func CreateToken(uid uint32) (string, error) {
 	config := config.GetConfig()
 	expirationInMinutes := config.AUTH.ExpirationMinutes
 	hmacSecret := config.AUTH.HmacSecret
@@ -65,7 +65,7 @@ func ExtractToken(r *http.Request) string {
 }
 
 // ExtractTokenID Extracts "uid" from Request authorization header
-func ExtractTokenID(r *http.Request) (uint64, error) {
+func ExtractTokenID(r *http.Request) (uint32, error) {
 
 	config := config.GetConfig()
 	tokenString := ExtractToken(r)
@@ -84,7 +84,7 @@ func ExtractTokenID(r *http.Request) (uint64, error) {
 		if err != nil {
 			return 0, err
 		}
-		return uint64(uid), nil
+		return uint32(uid), nil
 	}
 	return 0, nil
 }

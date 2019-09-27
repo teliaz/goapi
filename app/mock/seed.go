@@ -15,10 +15,17 @@ func Seed(db *gorm.DB) error {
 		return err
 	}
 
-	// TODO: Users Seeding
+	// Users Seeding
+	err = seedUsers(db)
+	if err != nil {
+		return err
+	}
 
-	// TODO: Assets Seeding
-
+	// Assets Seeding
+	err = seedAssets(db)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -58,27 +65,99 @@ func seedParticipants(db *gorm.DB) error {
 			return err
 		}
 	}
-	/*
-		// Tried to implement Concurrent "Bulk Insert" 
-		// Having Problems with duplicate primary key constrains
-		gopherCount := 10
-		runtime.GOMAXPROCS(2)
-		db.DB().SetMaxOpenConns(gopherCount)
-		channelInsert := make(chan int, gopherCount)
-		go func(gocherCount int) {
-			var wg sync.WaitGroup
-			wg.Add(gocherCount)
-			for _, p := range participants {
-				go func() {
-					defer wg.Done()
-					db.Model(&models.Participant{}).Save(&p)
-					channelInsert <- 1
-				}()
-				db.Model(&models.Participant{}).Save(&p)
-			}
-			wg.Wait()
-			close(channelInsert)
-		}(10)
-	*/
 	return nil
+}
+
+func seedUsers(db *gorm.DB) error {
+	users := []models.User{
+		{
+			Email:    "user1@example.com",
+			Password: "password",
+		},
+		{
+			Email:    "user2@example.com",
+			Password: "password",
+		},
+	}
+	for _, u := range users {
+		u.Prepare()
+		u.BeforeSave()
+		err := db.Model(&models.User{}).Create(&u).Error
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func seedAssets(db *gorm.DB) error {
+
+	charts := []models.Chart{
+		models.Chart{
+			GroupedMetric: "age",
+		},
+		models.Chart{
+			GroupedMetric: "CountryCode",
+		},
+	}
+	for _, c := range charts {
+		uid := uint32(rand.Intn(2) + 1)
+		_, _, err := c.CreateAssetChart(db, uid)
+		if err != nil {
+			return err
+		}
+	}
+
+	insights := []models.Insight{
+		models.Insight{
+			Gender:          "f",
+			BirthCountry:    "",
+			HoursComparator: ">",
+			HoursReference:  5,
+		},
+		models.Insight{
+			Gender:          "m",
+			BirthCountry:    "US",
+			HoursComparator: "<=",
+			HoursReference:  1,
+		},
+	}
+	for _, i := range insights {
+		uid := uint32(rand.Intn(2) + 1)
+		_, _, err := i.CreateAssetInsight(db, uid)
+		if err != nil {
+			return err
+		}
+	}
+
+	audiences := []models.Audience{
+		models.Audience{
+			AgeFrom:     20,
+			AgeTo:       25,
+			CountryCode: "",
+			Gender:      "m",
+		},
+		models.Audience{
+			AgeFrom:     20,
+			AgeTo:       25,
+			CountryCode: "",
+			Gender:      "f",
+		},
+		models.Audience{
+			AgeFrom:     30,
+			AgeTo:       40,
+			CountryCode: "US",
+			Gender:      "",
+		},
+	}
+	for _, i := range audiences {
+		uid := uint32(rand.Intn(2) + 1)
+		_, _, err := i.CreateAssetAudience(db, uid)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+
 }

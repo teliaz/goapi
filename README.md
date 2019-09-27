@@ -23,45 +23,13 @@ Then dove in on the following
 - [Concurrency made easy](https://www.youtube.com/watch?v=DqHb5KBe7qI)
 - [GopherCon2017 - Understanding Channels](https://www.youtube.com/watch?v=KBZlN0izeiY)
 
-## Problem Analysis
+## Problem Analysis & Concerns
 
 After reading carefully the challenge goals all assets (charts, insights, audience) could generate data from a single sample data-table. Guessing the Age, Gender, Country are demographic information and the only metric is the "hours spent on social media", I added the "Participants" schema and seeded mock data into this table.
 Age(10-80), Gender(2) and Country(259) are randomly seeded values and "hours spent on social media" is based on a normal distribution with a spike on 0-2 hours daily, based on a personal estimation.
 
 I should note that I fully understand that this is out of this challenge's scope and lacks performance, since all *Assets* are calculated based on live data and usually should be exported based on pre-calculated and transformed schemas.
-
-## API Routes table
-
-Endpoint                                        | Description
-------------                                    | -------------
-(POST)/auth/signup                              | endpoint to create a user
-(POST)/auth/login                               | authorize and return json web token
-(GET)/assets                                    | based on the token returns all user's assets
-(GET)/asset/{id}                                | get specific asset by id
-(PUT)/assets/{id}/favorite/{bool}               | add an asset to favourites or remove it
-(PUT)/assets/{id}/description                   | edit asset's description
-
-there are more endpoints that were made to make Seeding and Testing easier. All routes are on [router file]
-
-## Challenge Keypoints
-
-- [x] A working server application with functional API is required
-- [x] It is appreciated, though not required, if a Dockerfile is included.
-- [ ] Note that users have no limit on how many assets they want on their favourites so your service will need to provide a reasonable response time
-- [ ] Useful and passing tests would be also be viewed favourably
-
-## Features
-
-- [x] JWT Authentication, Authorizations
-- [x] ORM Implementation
-- [x] Mock Data
-- [ ] Testing Implementations
-
-## External Packages Used
-
-- [x] Gorilla Mux - Router
-- [x] GORM - A Go ORM
-- [x] Dgrijalva JWT - JSON Web Token Library
+Also noting that using a ORM deplets the neccesity to use repository pattern for storing data. 
 
 ## Docker Spinup Guidelines
 
@@ -73,6 +41,44 @@ docker-compose up -d --force-recreate --build
 ```
 
 Dockerfile included in the project
+
+
+## API Routes table
+
+Endpoint                                        | Description
+------------                                    | -------------
+(POST)/auth/signup                              | endpoint to create a user
+(POST)/auth/login                               | authorize and return json web token
+(GET)/assets                                    | based on the token returns all user's assets
+(GET)/assets/{id}                               | get specific asset by id
+(PATCH)/assets/{id}                             | edit asset's description or isFavorite
+(POST)/assets/charts                            | create asset / chart
+(POST)/assets/insigts                           | create asset / insight
+(POST)/assets/audiences                         | create asset / audience
+
+
+
+there are more endpoints that were made to make Seeding and Testing easier. All routes are on [router file]
+
+## Challenge Keypoints
+
+- [x] A working server application with functional API is required
+- [x] It is appreciated, though not required, if a Dockerfile is included.
+- [ ] Note that users have no limit on how many assets they want on their favourites so your service will need to provide a reasonable response time
+- [ ] Useful and passing tests would be also be viewed favourably *(Incomplete Tests)
+
+## Features
+
+- [x] JWT Authentication, Authorizations
+- [x] ORM Implementation
+- [x] Mock Data
+- [ ] Testing Implementations *(Incomplete Tests)
+
+## External Packages Used
+
+- [x] Gorilla Mux - Router
+- [x] GORM - A Go ORM
+- [x] Dgrijalva JWT - JSON Web Token Library
 
 ## Some other resources
 

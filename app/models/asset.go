@@ -10,8 +10,8 @@ import (
 )
 
 type Asset struct {
-	ID             uint64 `gorm:"primary_key;auto_increment" json:"id"`
-	UserID         uint64 `json:"uid"`
+	ID             uint32 `gorm:"primary_key;auto_increment" json:"id"`
+	UserID         uint32 `json:"uid"`
 	IsFavorite     bool   `gorm:"not null" json:"isFavorite"`
 	Title          string `gorm:"size:255;not null" json:"title"`
 	TitleGenerated string `gorm:"-" json:"title_generated"`
@@ -35,7 +35,7 @@ func (a *Asset) Prepare() {
 	a.UpdatedAt = time.Now()
 }
 
-func (a *Asset) GetAssets(db *gorm.DB, uid uint64) (*[]Asset, error) {
+func (a *Asset) GetAssets(db *gorm.DB, uid uint32) (*[]Asset, error) {
 	assets := []Asset{}
 	err := db.Debug().Model(&Asset{}).Limit(100).Order("created_at DESC").Where("user_id = ?", uid).Find(&assets).Error
 	if err != nil {
@@ -44,13 +44,13 @@ func (a *Asset) GetAssets(db *gorm.DB, uid uint64) (*[]Asset, error) {
 	return &assets, err
 }
 
-func (a *Asset) SaveAsset(db *gorm.DB, uid uint64) (*Asset, error) {
-	err := db.Debug().Model(&Asset{}).Create(&a).Error
+func (a *Asset) SaveAsset(db *gorm.DB, uid uint32) (*Asset, error) {
+	err := db.Model(&Asset{}).Create(&a).Error
 	if err != nil {
 		return &Asset{}, err
 	}
 	if a.ID != 0 {
-		err = db.Debug().Model(&Asset{}).Where("id = ?", a.Title).Error
+		err = db.Model(&Asset{}).Where("id = ?", a.ID).Error
 		if err != nil {
 			return &Asset{}, err
 		}
@@ -58,7 +58,7 @@ func (a *Asset) SaveAsset(db *gorm.DB, uid uint64) (*Asset, error) {
 	return a, nil
 }
 
-func (a *Asset) GetAsset(db *gorm.DB, id uint64, uid uint64) (*Asset, error) {
+func (a *Asset) GetAsset(db *gorm.DB, id uint32, uid uint32) (*Asset, error) {
 	err := db.Debug().Model(&Asset{}).Where("id = ? and user_id = ?", id, uid).Take(&a).Error
 	if err != nil {
 		return &Asset{}, err
@@ -72,7 +72,7 @@ func (a *Asset) GetAsset(db *gorm.DB, id uint64, uid uint64) (*Asset, error) {
 	return a, nil
 }
 
-func (a *Asset) DeleteAsset(db *gorm.DB, id uint64, uid uint32) (int64, error) {
+func (a *Asset) DeleteAsset(db *gorm.DB, id uint32, uid uint32) (int64, error) {
 
 	db = db.Debug().Model(&Asset{}).Where("id = ? and user_id = ?", id, uid).Take(&Asset{}).Delete(&Asset{})
 
@@ -87,19 +87,35 @@ func (a *Asset) DeleteAsset(db *gorm.DB, id uint64, uid uint32) (int64, error) {
 
 // Chart Section
 type Chart struct {
-	ID            uint   `gorm:"primary_key"`
-	AssetId       uint   `json:"assetId"`
-	GroupedMetric string `json:"groupedMetric"` // Could be age,
+	ID            uint32 `gorm:"primary_key"`
+	AssetId       uint32 `json:"assetId"`
+	GroupedMetric string `gorm:"size:30" json:"groupedMetric"` // Could be age,
 }
 
 func (c *Chart) TableName() string {
 	return "charts"
 }
 
+func (c *Chart) CreateAssetChart(db *gorm.DB, uid uint32) (*Asset, *Chart, error) {
+	asset := &Asset{}
+	asset.UserID = uid
+	asset, err := asset.SaveAsset(db, uid)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	c.AssetId = asset.ID
+	err = db.Create(&c).Error
+	if err != nil {
+		return asset, c, err
+	}
+	return asset, c, nil
+}
+
 // Audience Section
 type Audience struct {
-	ID      uint64 `gorm:"primary_key"`
-	AssetId uint64 `json:"assetId"`
+	ID      uint32 `gorm:"primary_key"`
+	AssetId uint32 `json:"assetId"`
 
 	AgeFrom     uint8  `json:"ageFrom"`
 	AgeTo       uint8  `json:"ageTo"`
@@ -111,7 +127,7 @@ func (a *Audience) TableName() string {
 	return "audiences"
 }
 
-func (a *Audience) CreateAssetAudience(db *gorm.DB, uid uint64) (*Asset, *Audience, error) {
+func (a *Audience) CreateAssetAudience(db *gorm.DB, uid uint32) (*Asset, *Audience, error) {
 	asset := &Asset{}
 	asset.UserID = uid
 	asset, err := asset.SaveAsset(db, uid)
@@ -120,7 +136,7 @@ func (a *Audience) CreateAssetAudience(db *gorm.DB, uid uint64) (*Asset, *Audien
 	}
 
 	a.AssetId = asset.ID
-	err = db.Debug().Create(&a).Error
+	err = db.Create(&a).Error
 	if err != nil {
 		return asset, a, err
 	}
@@ -129,18 +145,20 @@ func (a *Audience) CreateAssetAudience(db *gorm.DB, uid uint64) (*Asset, *Audien
 
 // Insight Section
 type Insight struct {
-	ID      uint64 `gorm:"primary_key"`
-	AssetId uint64 `json:"assetId"`
+	ID      uint32 `gorm:"primary_key"`
+	AssetId uint32 `json:"assetId"`
 
-	Gender       string `gorm:"size:1" json:"insightDescription"`
-	BirthCountry string `gorm:"size:2" json:"birthCountry"`
+	Gender          string `gorm:"size:1" json:"gender"`
+	BirthCountry    string `gorm:"size:2" json:"birthCountry"`
+	HoursComparator string `gorm:"size:2" json:"hoursComparator"`
+	HoursReference  uint8  `gorm:"size:1" json:"hoursMargin"`
 }
 
 func (i *Insight) TableName() string {
 	return "insights"
 }
 
-func (i *Insight) CreateAssetInsight(db *gorm.DB, uid uint64) (*Asset, *Insight, error) {
+func (i *Insight) CreateAssetInsight(db *gorm.DB, uid uint32) (*Asset, *Insight, error) {
 	asset := &Asset{}
 	asset.UserID = uid
 	asset, err := asset.SaveAsset(db, uid)
@@ -149,7 +167,7 @@ func (i *Insight) CreateAssetInsight(db *gorm.DB, uid uint64) (*Asset, *Insight,
 	}
 
 	i.AssetId = asset.ID
-	err = db.Debug().Create(&i).Error
+	err = db.Create(&i).Error
 	if err != nil {
 		return asset, i, err
 	}
@@ -166,9 +184,9 @@ type ChartDetails struct {
 }
 
 type InsightDetails struct {
-	Title string
+	Result string
 }
 
 type AudienceDetails struct {
-	Title string
+	Result string
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type Participant struct {
-	ID                      uint64    `gorm:"primary_key;auto_increment" json:"id"`
+	ID                      uint32    `gorm:"primary_key;auto_increment" json:"id"`
 	HoursSpendOnSocialDaily uint8     `json:"hoursSpendDailyOnSocialMedia"`
 	Age                     uint8     `json:"age"`
 	Gender                  string    `gorm:"size:1" json:"gender"`
