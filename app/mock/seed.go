@@ -25,25 +25,31 @@ func Seed(db *gorm.DB) error {
 func seedParticipants(db *gorm.DB) error {
 
 	var err error
-	hoursDesiredStdDev := 4.0
-	hoursDesiredMean := 4.0
 	numberOfParticipants := 1000
 
-	hoursMin := 0
-	hoursMax := 12
+	// hoursSpendOnSocialMedia
+	hoursMin := 0.0
+	hoursMax := 12.0
+	hoursPeak := 2.0
 
+	// Age Range
 	ageMin := 15
 	ageMax := 85
+
+	// Countries
+	country := models.Country{}
+	countries := country.GetAllCountries()
+	countriesLen := len(countries)
 
 	participants := []models.Participant{}
 	for i := 1; i <= numberOfParticipants; i++ {
 		participants = append(participants, models.Participant{
-			Gender:                  TernaryString(RandomBool().Bool() == true, "m", "f"),
-			HoursSpendOnSocialDaily: uint8(rand.Intn(hoursMax-hoursMin) + hoursMin),
+			Gender:                  TernaryString(GenerateRandomBool() == true, "m", "f"),
+			HoursSpendOnSocialDaily: uint8(GenerateNormalDistribution(hoursPeak, hoursMin, hoursMax)),
 			Age:                     uint8(rand.Intn(ageMax-ageMin) + ageMin),
+			CountryCode:             countries[rand.Intn(countriesLen)].Alpha2Code,
 			CreatedAt:               time.Now(),
 		})
-		// fmt.Println(uint8(NormalDistributionFactor()*hoursDesiredStdDev + hoursDesiredMean))
 	}
 
 	for _, p := range participants {
@@ -53,6 +59,8 @@ func seedParticipants(db *gorm.DB) error {
 		}
 	}
 	/*
+		// Tried to implement Concurrent "Bulk Insert" 
+		// Having Problems with duplicate primary key constrains
 		gopherCount := 10
 		runtime.GOMAXPROCS(2)
 		db.DB().SetMaxOpenConns(gopherCount)

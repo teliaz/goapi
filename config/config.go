@@ -24,7 +24,7 @@ func GetConfig() *Config {
 	return &Config{
 		DB: &DBConfig{
 			Dialect:  "postgres",
-			Host:     "127.0.0.1",
+			Host:     "gwidb",
 			Port:     "5432",
 			Username: "gwiuser",
 			Password: "secretpassword",

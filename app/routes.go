@@ -29,6 +29,10 @@ func (a *App) setRouters() {
 	a.Get("/assets/{page:[0-9]+}", middlewares.SetMiddlewareAuthentication(handlers.GetAssets, a.DB))
 	a.Get("/assets/favorites", middlewares.SetMiddlewareAuthentication(handlers.GetAssets, a.DB))
 
+	// Participants
+	a.Get("/participants", middlewares.SetMiddlewareAuthentication(handlers.GetParticipants, a.DB))
+	a.Get("/countries", middlewares.SetMiddlewareJSON(handlers.GetCountries, a.DB))
+
 }
 
 // RequestHandlerFunction HandlerRequest extension

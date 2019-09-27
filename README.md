@@ -1,4 +1,4 @@
-# GoLang API
+# GlobalWebIndex Engineering Challenge
 
 ## Introduction
 
@@ -23,45 +23,58 @@ Then dove in on the following
 - [Concurrency made easy](https://www.youtube.com/watch?v=DqHb5KBe7qI)
 - [GopherCon2017 - Understanding Channels](https://www.youtube.com/watch?v=KBZlN0izeiY)
 
-## Docker Guideline
+## Problem Analysis
 
-To run the API use the following:
+After reading carefully the challenge goals all assets (charts, insights, audience) could generate data from a single sample data-table. Guessing the Age, Gender, Country are demographic information and the only metric is the "hours spend on social media", I added the "Participants" schema and seeded mock data into this table.
+Age(10-80), Gender(2) and Country(259) are randomly seeded values and "hours spend on social media" is based on a normal distribution with a spike on 0-2 hours daily, based on a personal estimation.
 
-```bash
-docker-compose -f ./docker-compose.yml up -d
-docker-compose build up
-```
-
-Dockerfile included in the project
+I should note that I fully understand that this is out of this challenge scope and lacks performance, since all *Assets* are calculated based on live data and usualy should be pre-calculated and transformed.
 
 ## API Routes table
 
 Endpoint                                        | Description
 ------------                                    | -------------
-(GET)/assets                                    | endpoint to receive a user id and return a list of all the user’s assets
-(POST)/assets/{id}/favorite/{bool}              | endpoints that would add an asset to favourites, remove it
-(PUT)/assets/{id}/description                   | edit its description
+(POST)/auth/signup                              | endpoint to create a user
+(POST)/auth/login                               | authorize and retuen json web token
+(GET)/assets                                    | based on the token returns all user's assets
+(GET)/asset/{id}                                | get specific asset by id
+(PUT)/assets/{id}/favorite/{bool}               | add an asset to favourites or remove it
+(PUT)/assets/{id}/description                   | edit asset's description
 
-Challenge Keypoints
+there are more endpoints that were made to make Seeding and Testing easier. All routes are on [router file]
+
+## Challenge Keypoints
 
 - [x] A working server application with functional API is required
 - [x] It is appreciated, though not required, if a Dockerfile is included.
 - [ ] Note that users have no limit on how many assets they want on their favourites so your service will need to provide a reasonable response time
 - [ ] Useful and passing tests would be also be viewed favourably
 
-Features
+## Features
 
 - [x] JWT Authentication, Authorizations
-- [ ] ORM Implementation
-- [ ] Testable Endpoints
+- [x] ORM Implementation
+- [x] Mock Data
+- [ ] Testing Implementations
 
-External Packages Used
+## External Packages Used
 
 - [x] Gorilla Mux - Router
 - [x] GORM - A Go ORM
 - [x] Dgrijalva JWT - JSON Web Token Library
 
-Some other resources
+## Docker Spinup Guidelines
+
+To run the API use the following:
+
+```bash
+docker-compose -f ./docker-compose.yml up
+docker-compose up -d --force-recreate --build
+```
+
+Dockerfile included in the project
+
+## Some other resources
 
 - [Docker Compose Settings](https://github.com/kisulken/bulletinApi/blob/master/docker-compose.yml)
 - [Initial Implementation](https://github.com/dedidot/simple-api-golang)

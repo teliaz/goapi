@@ -26,3 +26,14 @@ func GetAssets(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	responses.JSON(w, http.StatusOK, assets)
 }
+
+func GetParticipants(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	participant := models.Participant{}
+
+	participants, err := participant.GetAllParticipants(db)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, participants)
+}

@@ -5,7 +5,7 @@ services:
   db:
     container_name: gwidb
     image: postgres:latest
-    hostname: db
+    hostname: gwidb
     environment:
       GET_HOST_FROM: dns
       POSTGRES_DB: gwi

@@ -33,7 +33,8 @@ func CreateToken(uid uint64) (string, error) {
 func TokenValid(r *http.Request) error {
 	config := config.GetConfig()
 	tokenString := ExtractToken(r)
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	// token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
@@ -43,9 +44,9 @@ func TokenValid(r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		Pretty(claims)
-	}
+	// if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+	// 	Pretty(claims)
+	// }
 	return nil
 }
 
@@ -67,8 +68,6 @@ func ExtractToken(r *http.Request) string {
 func ExtractTokenID(r *http.Request) (uint64, error) {
 
 	config := config.GetConfig()
-	fmt.Println("Secret is ", config.AUTH.HmacSecret)
-
 	tokenString := ExtractToken(r)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -97,6 +96,5 @@ func Pretty(data interface{}) {
 		log.Println(err)
 		return
 	}
-
 	fmt.Println(string(b))
 }

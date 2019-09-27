@@ -28,7 +28,6 @@ func (a *App) Initialize(config *config.Config) {
 		config.DB.Username,
 		config.DB.Name,
 		config.DB.Password,
-		// config.DB.Charset
 	)
 
 	db, err := gorm.Open(config.DB.Dialect, dbURI)
@@ -38,10 +37,6 @@ func (a *App) Initialize(config *config.Config) {
 
 	a.DB = databaseMigrate(db)
 	databaseSeed(db)
-
-	// fmt.Println("Database Migration Started")
-	// a.DB = models.DBMigrate(db)
-	// fmt.Println("Database Migration Completed")
 
 	a.Router = mux.NewRouter()
 	a.setRouters()

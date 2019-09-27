@@ -9,8 +9,9 @@ import (
 type Participant struct {
 	ID                      uint64    `gorm:"primary_key;auto_increment" json:"id"`
 	HoursSpendOnSocialDaily uint8     `json:"hoursSpendDailyOnSocialMedia"`
-	Age                     uint8     `gorm:"size:1" json:"age"`
-	Gender                  string    `json:"gender"`
+	Age                     uint8     `json:"age"`
+	Gender                  string    `gorm:"size:1" json:"gender"`
+	CountryCode             string    `gorm:"size:2" json:"countryCode"`
 	CreatedAt               time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 }
 
@@ -30,4 +31,13 @@ func (p *Participant) SaveParticipant(db *gorm.DB) (*Participant, error) {
 		}
 	}
 	return p, nil
+}
+
+func (p *Participant) GetAllParticipants(db *gorm.DB) (*[]Participant, error) {
+	participants := []Participant{}
+	err := db.Debug().Model(&Participant{}).Limit(10000).Find(&participants).Error
+	if err != nil {
+		return &[]Participant{}, err
+	}
+	return &participants, err
 }
