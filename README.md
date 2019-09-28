@@ -61,11 +61,3 @@ there are more endpoints that were made to make Seeding and Testing easier. All 
 - [x] Golang Crypto - Hashing passwords before storing  and Validity Comparison
 - [x] Evanphx JSON Patch - Using a single endpoint to update asset title or asset favorite/unfavorite
 
-## Some other resources
-
-- [Docker Compose Settings](https://github.com/kisulken/bulletinApi/blob/master/docker-compose.yml)
-- [Initial Implementation](https://github.com/dedidot/simple-api-golang)
-- [Decorators example](https://gist.github.com/thomasdarimont/31b26f782644c92effd0df3f7b64ef5d)
-- [Channels Implementation](https://www.youtube.com/watch?v=7DXQH7bMvZ8)
-- [Simple-API-Golang](github.com/mingrammer/go-todo-rest-api-example)
-- [CRUD RESTful API with Go, GORM, JWT, Postgres, Mysql, and Testing](https://github.com/victorsteven/Go-JWT-Postgres-Mysql-Restful-API)
