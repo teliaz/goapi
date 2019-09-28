@@ -4,13 +4,6 @@ import (
 	"math/rand"
 )
 
-func TernaryString(statement bool, a, b string) string {
-	if statement {
-		return a
-	}
-	return b
-}
-
 func GenerateRandomBool() bool {
 	return rand.Intn(2) == 0
 }

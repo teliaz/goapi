@@ -11,6 +11,7 @@ import (
 	jsonpatch "github.com/evanphx/json-patch"
 
 	"gwiapi/app/auth"
+	"gwiapi/app/helpers"
 	"gwiapi/app/models"
 	"gwiapi/app/responses"
 
@@ -21,20 +22,13 @@ import (
 // GetAssets will bring asset of the user
 func GetAssets(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
-	// Get Pagination variables
-	page, found := mux.Vars(r)["page"]
-	if !found {
-		page = "1"
-	}
+	page, _ := helpers.ExportParam(r, "page", "1")
 	pg, err := strconv.ParseUint(page, 10, 32)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 	}
 
-	limit, found := mux.Vars(r)["limit"]
-	if !found {
-		limit = "10"
-	}
+	limit, _ := helpers.ExportParam(r, "limit", "10")
 	lmt, err := strconv.ParseUint(limit, 10, 32)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)

@@ -1,6 +1,7 @@
 package mock
 
 import (
+	"gwiapi/app/helpers"
 	"gwiapi/app/models"
 	"math/rand"
 	"time"
@@ -51,7 +52,7 @@ func seedParticipants(db *gorm.DB) error {
 	participants := []models.Participant{}
 	for i := 1; i <= numberOfParticipants; i++ {
 		participants = append(participants, models.Participant{
-			Gender:                  TernaryString(GenerateRandomBool() == true, "m", "f"),
+			Gender:                  helpers.StringTernary(GenerateRandomBool() == true, "m", "f"),
 			HoursSpendOnSocialDaily: uint8(GenerateNormalDistribution(hoursPeak, hoursMin, hoursMax)),
 			Age:                     uint8(rand.Intn(ageMax-ageMin) + ageMin),
 			CountryCode:             countries[rand.Intn(countriesLen)].Alpha2Code,

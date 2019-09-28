@@ -92,16 +92,27 @@ func (a *Asset) GetAsset(db *gorm.DB, id uint32, uid uint32) (*Asset, error) {
 }
 
 func (a *Asset) DeleteAsset(db *gorm.DB, id uint32, uid uint32) (int64, error) {
-
+	var rowsAffected int64
 	db = db.Debug().Model(&Asset{}).Where("id = ? and user_id = ?", id, uid).Take(&Asset{}).Delete(&Asset{})
-
 	if db.Error != nil {
 		if gorm.IsRecordNotFoundError(db.Error) {
 			return 0, errors.New("Asset not found")
 		}
 		return 0, db.Error
 	}
-	return db.RowsAffected, nil
+	rowsAffected = db.RowsAffected
+
+	if a.AssetType == "chart" {
+		db.Debug().Model(&Chart{}).Where("asset_id = ?").Take(&Chart{}).Delete(&Asset{})
+	}
+	if a.AssetType == "insight" {
+		db.Debug().Model(&Insight{}).Where("asset_id = ?").Take(&Insight{}).Delete(&Asset{})
+	}
+	if a.AssetType == "audience" {
+		db.Debug().Model(&Audience{}).Where("asset_id = ?").Take(&Audience{}).Delete(&Asset{})
+	}
+
+	return rowsAffected, nil
 }
 
 // Chart Section
