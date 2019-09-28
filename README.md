@@ -11,7 +11,7 @@ Also noting that using a ORM deplets the neccesity to use repository pattern for
 For convinience and easy testing the endpoint on every spin-up the DB is dropped and recreated with mock data.
 I also include a collection of API calls test all chalenges endpoints [Postman Collection Link](https://www.getpostman.com/collections/dd8e929f0dd1124fbb3a)
 
-## Docker Spinup Guidelines
+## Docker Guidelines
 
 To run the API use the following:
 
@@ -19,9 +19,6 @@ To run the API use the following:
 docker-compose -f ./docker-compose.yml up
 docker-compose up -d --force-recreate --build
 ```
-
-Dockerfile included in the project
-
 
 ## API Routes table
 
@@ -44,8 +41,9 @@ there are more endpoints that were made to make Seeding and Testing easier. All 
 
 - [x] A working server application with functional API is required
 - [x] It is appreciated, though not required, if a Dockerfile is included.
-- [ ] Note that users have no limit on how many assets they want on their favourites so your service will need to provide a reasonable response time
+- [x] Note that users have no limit on how many assets they want on their favourites so your service will need to provide a *reasonable response time
 - [ ] Useful and passing tests would be also be viewed favourably *(Incomplete Tests)
+- [x] Dockerfile included in the project
 
 ## Features
 
@@ -59,6 +57,9 @@ there are more endpoints that were made to make Seeding and Testing easier. All 
 - [x] Gorilla Mux - Router
 - [x] GORM - A Go ORM
 - [x] Dgrijalva JWT - JSON Web Token Library
+- [x] Badoux Checkmail - Validate email on signup
+- [x] Golang Crypto - Hashing passwords before storing  and Validity Comparison
+- [x] Evanphx JSON Patch - Using a single endpoint to update asset title or asset favorite/unfavorite
 
 ## Some other resources
 

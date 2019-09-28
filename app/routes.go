@@ -12,30 +12,31 @@ import (
 func (a *App) setRouters() {
 
 	// Health Check
-	a.Get("/", middlewares.SetMiddlewareJSON(handlers.Ping, a.DB))
+	a.Get("/", middlewares.JSON(handlers.Ping, a.DB))
 
 	// Auth Routes
-	a.Post("/auth/signup", middlewares.SetMiddlewareJSON(handlers.CreateUser, a.DB))
-	a.Post("/auth/login", middlewares.SetMiddlewareJSON(handlers.Login, a.DB))
+	a.Post("/auth/signup", middlewares.JSON(handlers.CreateUser, a.DB))
+	a.Post("/auth/login", middlewares.JSON(handlers.Login, a.DB))
 
 	// Users routes
-	a.Get("/users", middlewares.SetMiddlewareAuthentication(handlers.GetUsers, a.DB))
-	a.Get("/users/{id}", middlewares.SetMiddlewareAuthentication(handlers.GetUser, a.DB))
-	a.Put("/users/{id}", middlewares.SetMiddlewareAuthentication(handlers.UpdateUser, a.DB))
-	a.Delete("/users/{id}", middlewares.SetMiddlewareAuthentication(handlers.DeleteUser, a.DB))
+	a.Get("/users", middlewares.Auth(handlers.GetUsers, a.DB))
+	a.Get("/users/{id}", middlewares.Auth(handlers.GetUser, a.DB))
+	a.Put("/users/{id}", middlewares.Auth(handlers.UpdateUser, a.DB))
+	a.Delete("/users/{id}", middlewares.Auth(handlers.DeleteUser, a.DB))
 
 	// Assets Routes
-	a.Get("/assets", middlewares.SetMiddlewareAuthentication(handlers.GetAssets, a.DB))
-	a.Get("/assets/{id:[0-9]+}", middlewares.SetMiddlewareAuthentication(handlers.GetAsset, a.DB))
-	a.Patch("/assets/{id:[0-9]+}", middlewares.SetMiddlewareAuthentication(handlers.UpdateAsset, a.DB))
-	a.Post("/assets/charts", middlewares.SetMiddlewareAuthentication(handlers.CreateAssetChart, a.DB))
-	a.Post("/assets/insights", middlewares.SetMiddlewareAuthentication(handlers.CreateAssetInsight, a.DB))
-	a.Post("/assets/audiences", middlewares.SetMiddlewareAuthentication(handlers.CreateAssetAudience, a.DB))
+	a.Get("/assets", middlewares.Auth(handlers.GetAssets, a.DB))
+	a.Get("/assets/{id:[0-9]+}", middlewares.Auth(handlers.GetAsset, a.DB))
+	a.Patch("/assets/{id:[0-9]+}", middlewares.Auth(handlers.UpdateAsset, a.DB))
+	a.Delete("/assets/{id:[0-9]+}", middlewares.Auth(handlers.DeleteAsset, a.DB))
+	a.Post("/assets/charts", middlewares.Auth(handlers.CreateAssetChart, a.DB))
+	a.Post("/assets/insights", middlewares.Auth(handlers.CreateAssetInsight, a.DB))
+	a.Post("/assets/audiences", middlewares.Auth(handlers.CreateAssetAudience, a.DB))
 
 	// Participants
-	a.Get("/participants", middlewares.SetMiddlewareAuthentication(handlers.GetParticipants, a.DB))
-	a.Post("/participants", middlewares.SetMiddlewareAuthentication(handlers.AddParticipant, a.DB))
-	a.Get("/countries", middlewares.SetMiddlewareJSON(handlers.GetCountries, a.DB))
+	a.Get("/participants", middlewares.Auth(handlers.GetParticipants, a.DB))
+	a.Post("/participants", middlewares.Auth(handlers.AddParticipant, a.DB))
+	a.Get("/countries", middlewares.JSON(handlers.GetCountries, a.DB))
 
 }
 
@@ -65,7 +66,7 @@ func (a *App) Post(path string, f func(w http.ResponseWriter, r *http.Request)) 
 
 // Get wrap HandleFunc for Patch method
 func (a *App) Patch(path string, f func(w http.ResponseWriter, r *http.Request)) {
-	a.Router.HandleFunc(path, f).Methods("POST")
+	a.Router.HandleFunc(path, f).Methods("PATCH")
 }
 
 // Get wrap HandleFunc for PUT method

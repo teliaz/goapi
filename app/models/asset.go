@@ -2,8 +2,6 @@ package models
 
 import (
 	"errors"
-	"html"
-	"strings"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -17,9 +15,9 @@ type Asset struct {
 	TitleGenerated string `gorm:"-" json:"title_generated"`
 	AssetType      string `gorm:"size:15;not null" json:"asset_type"`
 
-	Chart    *ChartDetails    `json:"chart"`
-	Insight  *InsightDetails  `json:"insight"`
-	Audience *AudienceDetails `json:"audience"`
+	Chart    *ChartDetails    `json:"chart,omitempty"`
+	Insight  *InsightDetails  `json:"insight,omitempty"`
+	Audience *AudienceDetails `json:"audience,omitempty"`
 
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
@@ -31,7 +29,7 @@ func (a *Asset) TableName() string {
 
 func (a *Asset) Prepare() {
 	a.ID = 0
-	a.Title = html.EscapeString(strings.TrimSpace(a.Title))
+	// a.Title = html.EscapeString(strings.TrimSpace(a.Title))
 	a.CreatedAt = time.Now()
 	a.UpdatedAt = time.Now()
 }
@@ -43,6 +41,26 @@ func (a *Asset) GetAssets(db *gorm.DB, uid uint32, page, itemsPerPage uint32) (*
 		return &[]Asset{}, err
 	}
 	return &assets, err
+}
+
+func (a *Asset) UpdateAsset(db *gorm.DB, id uint32, uid uint32) (*Asset, error) {
+
+	db = db.Debug().Model(&User{}).Where("id = ? and user_id = ?", id, uid).Take(&Asset{}).UpdateColumns(
+		map[string]interface{}{
+			"is_favorite": a.IsFavorite,
+			"title":       a.Title,
+			"update_at":   time.Now(),
+		},
+	)
+	if db.Error != nil {
+		return &Asset{}, db.Error
+	}
+	// This is the display the updated user
+	err := db.Debug().Model(&Asset{}).Where("id = ?", id).Take(&a).Error
+	if err != nil {
+		return &Asset{}, err
+	}
+	return a, nil
 }
 
 func (a *Asset) SaveAsset(db *gorm.DB, uid uint32) (*Asset, error) {
