@@ -26,25 +26,43 @@ func GetAssets(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	pg, err := strconv.ParseUint(page, 10, 32)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	if pg < 1 {
+		responses.ERROR(w, http.StatusNotAcceptable, errors.New("Page number is not valid"))
+		return
 	}
 
 	limit, _ := helpers.ExportParam(r, "limit", "10")
 	lmt, err := strconv.ParseUint(limit, 10, 32)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
 	}
-
-	asset := models.Asset{}
+	if lmt < 1 && lmt > 100 {
+		responses.ERROR(w, http.StatusNotAcceptable, errors.New("Number of limit in records result is not supported"))
+		return
+	}
 
 	// Select only User Assets from Token
 	uid, err := auth.ExtractTokenID(r)
+	a := &models.Asset{}
 
-	assets, err := asset.GetAssets(db, uid, uint32(pg), uint32(lmt))
+	assets, err := a.GetAssets(db, uid, uint32(pg), uint32(lmt))
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusOK, assets)
+
+	// ids := []uint32{}
+	// for _, o := range *assets {
+	// 	ids = append(ids, o.ID)
+	// }
+
+	assetsResponse := []models.Asset{}
+	assetsResponse, err = a.GetAssetsWithDetails(db, assets, uid)
+
+	responses.JSON(w, http.StatusOK, assetsResponse)
 }
 
 func GetAsset(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
@@ -63,8 +81,8 @@ func GetAsset(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	// Select only User Asset from Token
 	uid, err := auth.ExtractTokenID(r)
 
-	a := &models.Asset{}
-	a, err = a.GetAsset(db, uint32(assetId), uid)
+	a := models.Asset{}
+	a, err = models.GetAsset(db, uint32(assetId), uid)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
@@ -74,36 +92,7 @@ func GetAsset(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusNotFound, err)
 		return
 	}
-
-	switch a.AssetType {
-	case "chart":
-		a.Chart = getAssetChartDetails(db)
-	case "insight":
-		a.Insight = getAssetInsightDetails(db)
-	case "audience":
-		a.Audience = getAssetAudienceDetails(db)
-	default:
-	}
-
 	responses.JSON(w, http.StatusOK, a)
-}
-
-func getAssetChartDetails(db *gorm.DB) *models.ChartDetails {
-	c := &models.ChartDetails{}
-	// TODO: Incomplete
-	return c
-}
-
-func getAssetInsightDetails(db *gorm.DB) *models.InsightDetails {
-	c := &models.InsightDetails{}
-	// TODO: Incomplete
-	return c
-}
-
-func getAssetAudienceDetails(db *gorm.DB) *models.AudienceDetails {
-	c := &models.AudienceDetails{}
-	// TODO: Incomplete
-	return c
 }
 
 func DeleteAsset(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
@@ -143,8 +132,8 @@ func UpdateAsset(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	assetId, err := strconv.ParseUint(id, 10, 32)
 
 	// Get Original
-	asset := models.Asset{}
-	originalAsset, err := asset.GetAsset(db, uint32(assetId), uid)
+	//asset := models.Asset{}
+	originalAsset, err := models.GetAsset(db, uint32(assetId), uid)
 	if err != nil {
 		responses.ERROR(w, http.StatusNotFound, err)
 		return
@@ -191,14 +180,24 @@ func CreateAssetChart(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	a := &models.Asset{}
 	c := &models.Chart{}
 
-	// TODO: Parse Body
+	// Parse Body
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	err = json.Unmarshal(body, &c)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
 
 	a, c, err = c.CreateAssetChart(db, uid)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	w.Header().Set("Location", fmt.Sprintf("%s/assets/%d", r.Host, r.RequestURI, a.ID))
+	w.Header().Set("Location", fmt.Sprintf("%s/%s/chart/%d", r.Host, r.RequestURI, a.ID))
 	responses.JSON(w, http.StatusOK, a)
 }
 
@@ -209,14 +208,24 @@ func CreateAssetInsight(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	a := &models.Asset{}
 	i := &models.Insight{}
 
-	// TODO: Parse Body
+	// Parse Body
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	err = json.Unmarshal(body, &i)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
 
 	a, i, err = i.CreateAssetInsight(db, uid)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	w.Header().Set("Location", fmt.Sprintf("%s/assets/%d", r.Host, r.RequestURI, a.ID))
+	w.Header().Set("Location", fmt.Sprintf("%s/%s/insight/%d", r.Host, r.RequestURI, a.ID))
 	responses.JSON(w, http.StatusOK, a)
 }
 
@@ -227,13 +236,23 @@ func CreateAssetAudience(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	ass := &models.Asset{}
 	aud := &models.Audience{}
 
-	// TODO: Parse Body
+	// Parse Body
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	err = json.Unmarshal(body, &aud)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
 
 	ass, aud, err = aud.CreateAssetAudience(db, uid)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	w.Header().Set("Location", fmt.Sprintf("%s/assets/%d", r.Host, r.RequestURI, ass.ID))
+	w.Header().Set("Location", fmt.Sprintf("%s/%s/audience/%d", r.Host, r.RequestURI, ass.ID))
 	responses.JSON(w, http.StatusOK, ass)
 }

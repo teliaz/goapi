@@ -6,6 +6,7 @@ I took some time to Scratch on the basics
 
 - [Go by Example](https://gobyexample.com)
 - [A tour of Go](https://tour.golang.org)
+- [Udemy Google's Go (golang) Programming Language](https://www.udemy.com/course/learn-how-to-code/)
 
 Then dove in on the following
 

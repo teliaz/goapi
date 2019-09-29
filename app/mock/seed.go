@@ -32,10 +32,10 @@ func Seed(db *gorm.DB) error {
 
 func seedParticipants(db *gorm.DB) error {
 
-	var err error
-	numberOfParticipants := 1000
+	//var err error
+	numberOfParticipants := 5000
 
-	// hoursSpendOnSocialMedia
+	// hoursSpentOnSocialMedia
 	hoursMin := 0.0
 	hoursMax := 12.0
 	hoursPeak := 2.0
@@ -52,20 +52,51 @@ func seedParticipants(db *gorm.DB) error {
 	participants := []models.Participant{}
 	for i := 1; i <= numberOfParticipants; i++ {
 		participants = append(participants, models.Participant{
-			Gender:                  helpers.StringTernary(GenerateRandomBool() == true, "m", "f"),
-			HoursSpendOnSocialDaily: uint8(GenerateNormalDistribution(hoursPeak, hoursMin, hoursMax)),
+			Gender:                  helpers.StringTernary(helpers.GenerateRandomBool() == true, "m", "f"),
+			HoursSpentOnSocialDaily: uint8(helpers.GenerateNormalDistribution(hoursPeak, hoursMin, hoursMax)),
 			Age:                     uint8(rand.Intn(ageMax-ageMin) + ageMin),
 			CountryCode:             countries[rand.Intn(countriesLen)].Alpha2Code,
 			CreatedAt:               time.Now(),
 		})
 	}
 
-	for _, p := range participants {
-		err = db.Model(&models.Participant{}).Save(&p).Error
-		if err != nil {
-			return err
-		}
+	var participants2 []interface{}
+	for i := 1; i <= numberOfParticipants; i++ {
+		participants2 = append(participants2, models.Participant{
+			Gender:                  helpers.StringTernary(helpers.GenerateRandomBool() == true, "m", "f"),
+			HoursSpentOnSocialDaily: uint8(helpers.GenerateNormalDistribution(hoursPeak, hoursMin, hoursMax)),
+			Age:                     uint8(rand.Intn(ageMax-ageMin) + ageMin),
+			CountryCode:             countries[rand.Intn(countriesLen)].Alpha2Code,
+			CreatedAt:               time.Now(),
+		})
 	}
+
+	// tStart := time.Now()
+	// for _, p := range participants {
+	// 	err := db.Model(&models.Participant{}).Save(&p).Error
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// }
+	// fmt.Println("Method 1 ", time.Since(tStart))
+
+	// tStart = time.Now()
+	// var wg sync.WaitGroup
+	// for _, p := range participants {
+	// 	wg.Add(1)
+	// 	go func(p models.Participant, db *gorm.DB) {
+	// 		defer wg.Done()
+	// 		_ = db.Model(&models.Participant{}).Save(&p).Error
+	// 	}(p, db)
+	// }
+	// wg.Wait()
+	// fmt.Println("Method 2 ", time.Since(tStart))
+
+	//tStart = time.Now()
+	dbGorm := helpers.GormStruct{DB: db}
+	dbGorm.BatchInsert(participants2)
+	// fmt.Println("Method 3 ", time.Since(tStart))
+
 	return nil
 }
 
@@ -98,7 +129,7 @@ func seedAssets(db *gorm.DB) error {
 			GroupedMetric: "age",
 		},
 		models.Chart{
-			GroupedMetric: "CountryCode",
+			GroupedMetric: "country_code",
 		},
 	}
 	for _, c := range charts {
@@ -112,39 +143,45 @@ func seedAssets(db *gorm.DB) error {
 	insights := []models.Insight{
 		models.Insight{
 			Gender:          "f",
-			BirthCountry:    "",
+			CountryCode:     "",
+			AgeFrom:         20,
+			AgeTo:           25,
 			HoursComparator: ">",
-			HoursReference:  5,
+			HoursReference:  1,
 		},
 		models.Insight{
 			Gender:          "m",
-			BirthCountry:    "US",
+			CountryCode:     "US",
+			AgeFrom:         30,
+			AgeTo:           35,
 			HoursComparator: "<=",
 			HoursReference:  1,
 		},
 		models.Insight{
 			Gender:          "f",
-			BirthCountry:    "US",
+			CountryCode:     "US",
 			HoursComparator: "<=",
 			HoursReference:  1,
 		},
 		models.Insight{
 			Gender:          "f",
-			BirthCountry:    "",
+			CountryCode:     "",
+			AgeFrom:         20,
 			HoursComparator: ">",
-			HoursReference:  5,
+			HoursReference:  4,
 		},
 		models.Insight{
 			Gender:          "m",
-			BirthCountry:    "",
+			CountryCode:     "",
 			HoursComparator: ">",
-			HoursReference:  6,
+			HoursReference:  10,
 		},
 		models.Insight{
 			Gender:          "",
-			BirthCountry:    "GR",
+			CountryCode:     "GR",
+			AgeTo:           50,
 			HoursComparator: ">",
-			HoursReference:  6,
+			HoursReference:  1,
 		},
 	}
 	for _, i := range insights {
@@ -157,40 +194,40 @@ func seedAssets(db *gorm.DB) error {
 
 	audiences := []models.Audience{
 		models.Audience{
-			AgeFrom:     20,
-			AgeTo:       25,
-			CountryCode: "",
 			Gender:      "m",
-		},
-		models.Audience{
+			CountryCode: "",
 			AgeFrom:     20,
 			AgeTo:       25,
+		},
+		models.Audience{
+			Gender:      "f",
 			CountryCode: "",
-			Gender:      "f",
+			AgeFrom:     20,
+			AgeTo:       25,
 		},
 		models.Audience{
-			AgeFrom:     25,
-			AgeTo:       30,
-			CountryCode: "GR",
 			Gender:      "",
-		},
-		models.Audience{
+			CountryCode: "GR",
 			AgeFrom:     25,
 			AgeTo:       30,
+		},
+		models.Audience{
+			Gender:      "",
 			CountryCode: "US",
-			Gender:      "",
+			AgeFrom:     25,
+			AgeTo:       30,
 		},
 		models.Audience{
+			Gender:      "",
+			CountryCode: "GR",
 			AgeFrom:     30,
 			AgeTo:       35,
-			CountryCode: "GR",
-			Gender:      "",
 		},
 		models.Audience{
-			AgeFrom:     30,
-			AgeTo:       35,
-			CountryCode: "GR",
 			Gender:      "f",
+			CountryCode: "GR",
+			AgeFrom:     30,
+			AgeTo:       35,
 		},
 		models.Audience{
 			AgeFrom:     30,

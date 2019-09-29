@@ -33,24 +33,15 @@ Endpoint                                        | Description
 (POST)/assets/insigts                           | create asset / insight
 (POST)/assets/audiences                         | create asset / audience
 
-
-
 there are more endpoints that were made to make Seeding and Testing easier. All routes are specified on `/app/routes.go`
 
 ## Challenge Keypoints
 
 - [x] A working server application with functional API is required
 - [x] It is appreciated, though not required, if a Dockerfile is included.
-- [x] Note that users have no limit on how many assets they want on their favourites so your service will need to provide a *reasonable response time
-- [ ] Useful and passing tests would be also be viewed favourably *(Incomplete Tests)
+- [x] Note that users have no limit on how many assets they want on their favourites so your service will need to provide a reasonable response time
 - [x] Dockerfile included in the project
-
-## Features
-
-- [x] JWT Authentication, Authorizations
-- [x] ORM Implementation
-- [x] Mock Data
-- [ ] Testing Implementations *(Incomplete Tests)
+- [ ] Useful and passing tests would be also be viewed favourably *(Very Little Tests)
 
 ## Dependencies
 
@@ -60,4 +51,3 @@ there are more endpoints that were made to make Seeding and Testing easier. All 
 - [x] Badoux Checkmail - Validate email on signup
 - [x] Golang Crypto - Hashing passwords before storing  and Validity Comparison
 - [x] Evanphx JSON Patch - Using a single endpoint to update asset title or asset favorite/unfavorite
-

@@ -15,12 +15,21 @@ type Asset struct {
 	TitleGenerated string `gorm:"-" json:"title_generated"`
 	AssetType      string `gorm:"size:15;not null" json:"asset_type"`
 
-	Chart    *ChartDetails    `json:"chart,omitempty"`
-	Insight  *InsightDetails  `json:"insight,omitempty"`
-	Audience *AudienceDetails `json:"audience,omitempty"`
+	ChartData    *Chart    `json:",omitempty"`
+	InsightData  *Insight  `json:",omitempty"`
+	AudienceData *Audience `json:",omitempty"`
+
+	Chart    *ChartDetails    `json:",omitempty"`
+	Insight  *InsightDetails  `json:",omitempty"`
+	Audience *AudienceDetails `json:",omitempty"`
 
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+}
+
+type AssetChannelResult struct {
+	Result Asset
+	Err    error
 }
 
 func (a *Asset) TableName() string {
@@ -34,13 +43,43 @@ func (a *Asset) Prepare() {
 	a.UpdatedAt = time.Now()
 }
 
-func (a *Asset) GetAssets(db *gorm.DB, uid uint32, page, itemsPerPage uint32) (*[]Asset, error) {
+func (a *Asset) GetAssets(db *gorm.DB, uid uint32, page, itemsPerPage uint32) ([]Asset, error) {
 	assets := []Asset{}
 	err := db.Debug().Model(&Asset{}).Order("updated_at DESC").Offset((page-1)*itemsPerPage).Limit(itemsPerPage).Where("user_id = ?", uid).Find(&assets).Error
 	if err != nil {
-		return &[]Asset{}, err
+		return []Asset{}, err
 	}
-	return &assets, err
+	return assets, nil
+}
+
+func (a *Asset) GetAssetsWithDetails(db *gorm.DB, assets []Asset, uid uint32) ([]Asset, error) {
+	assetsResponse := []Asset{}
+	var err error
+
+	// Initial Implementation to check Data returned
+	// for i := 0; i < len(ids); i++ {
+	// 	asset, _ := GetAsset(db, ids[i], uid)
+	// 	assetsResponse = append(assetsResponse, asset)
+	// }
+
+	// Initial Implementation 250ms - Bellow Implementation 60ms
+	channelAsset := make(chan Asset)
+	for _, a := range assets {
+		switch a.AssetType {
+		case "chart":
+			go GetAssetChartGopher(db, a.ID, a, channelAsset)
+		case "insight":
+			go GetAssetInsightGopher(db, a.ID, a, channelAsset)
+		case "audience":
+			go GetAssetAudienceGopher(db, a.ID, a, channelAsset)
+		default:
+		}
+	}
+	for i := 0; i < len(assets); i++ {
+		assetsResponse = append(assetsResponse, <-channelAsset)
+	}
+
+	return assetsResponse, err
 }
 
 func (a *Asset) UpdateAsset(db *gorm.DB, id uint32, uid uint32) (*Asset, error) {
@@ -77,18 +116,35 @@ func (a *Asset) SaveAsset(db *gorm.DB, uid uint32) (*Asset, error) {
 	return a, nil
 }
 
-func (a *Asset) GetAsset(db *gorm.DB, id uint32, uid uint32) (*Asset, error) {
+func GetAsset(db *gorm.DB, id uint32, uid uint32) (Asset, error) {
+	a := Asset{}
 	err := db.Debug().Model(&Asset{}).Where("id = ? and user_id = ?", id, uid).Take(&a).Error
 	if err != nil {
-		return &Asset{}, err
+		return Asset{}, err
 	}
 	if a.ID != 0 {
 		err = db.Debug().Model(&Asset{}).Where("id = ? and user_id = ?", a.Title).Error
 		if err != nil {
-			return &Asset{}, err
+			return Asset{}, err
 		}
 	}
-	return a, nil
+
+	var errRes error
+	channelAsset := make(chan Asset)
+	switch a.AssetType {
+	case "chart":
+		go GetAssetChartGopher(db, a.ID, a, channelAsset)
+	case "insight":
+		go GetAssetInsightGopher(db, a.ID, a, channelAsset)
+	case "audience":
+		go GetAssetAudienceGopher(db, a.ID, a, channelAsset)
+	default:
+	}
+	a = <-channelAsset
+	if errRes != nil {
+		return Asset{}, errRes
+	}
+	return a, errRes
 }
 
 func (a *Asset) DeleteAsset(db *gorm.DB, id uint32, uid uint32) (int64, error) {
@@ -113,113 +169,4 @@ func (a *Asset) DeleteAsset(db *gorm.DB, id uint32, uid uint32) (int64, error) {
 	}
 
 	return rowsAffected, nil
-}
-
-// Chart Section
-type Chart struct {
-	ID            uint32 `gorm:"primary_key"`
-	AssetId       uint32 `json:"assetId"`
-	GroupedMetric string `gorm:"size:30" json:"groupedMetric"` // Could be age,
-}
-
-func (c *Chart) TableName() string {
-	return "charts"
-}
-
-func (c *Chart) CreateAssetChart(db *gorm.DB, uid uint32) (*Asset, *Chart, error) {
-	asset := &Asset{}
-	asset.UserID = uid
-	asset.AssetType = "chart"
-	asset, err := asset.SaveAsset(db, uid)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	c.AssetId = asset.ID
-	err = db.Create(&c).Error
-	if err != nil {
-		return asset, c, err
-	}
-	return asset, c, nil
-}
-
-// Audience Section
-type Audience struct {
-	ID      uint32 `gorm:"primary_key"`
-	AssetId uint32 `json:"assetId"`
-
-	AgeFrom     uint8  `json:"ageFrom"`
-	AgeTo       uint8  `json:"ageTo"`
-	CountryCode string `json:"countryCode"`
-	Gender      string `gorm:"size:1" json:"gender"`
-}
-
-func (a *Audience) TableName() string {
-	return "audiences"
-}
-
-func (a *Audience) CreateAssetAudience(db *gorm.DB, uid uint32) (*Asset, *Audience, error) {
-	asset := &Asset{}
-	asset.UserID = uid
-	asset.AssetType = "audience"
-	asset, err := asset.SaveAsset(db, uid)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	a.AssetId = asset.ID
-	err = db.Create(&a).Error
-	if err != nil {
-		return asset, a, err
-	}
-	return asset, a, nil
-}
-
-// Insight Section
-type Insight struct {
-	ID      uint32 `gorm:"primary_key"`
-	AssetId uint32 `json:"assetId"`
-
-	Gender          string `gorm:"size:1" json:"gender"`
-	BirthCountry    string `gorm:"size:2" json:"birthCountry"`
-	HoursComparator string `gorm:"size:2" json:"hoursComparator"`
-	HoursReference  uint8  `gorm:"size:1" json:"hoursMargin"`
-}
-
-func (i *Insight) TableName() string {
-	return "insights"
-}
-
-func (i *Insight) CreateAssetInsight(db *gorm.DB, uid uint32) (*Asset, *Insight, error) {
-	asset := &Asset{}
-	asset.UserID = uid
-	asset.AssetType = "insight"
-	asset, err := asset.SaveAsset(db, uid)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	i.AssetId = asset.ID
-	err = db.Create(&i).Error
-	if err != nil {
-		return asset, i, err
-	}
-
-	return asset, i, nil
-}
-
-// Generated Structs Section
-type ChartDetails struct {
-	Title  string
-	XTitle string
-	YTitle string
-	Data   map[string]string
-}
-
-type InsightDetails struct {
-	Result string
-}
-
-type AudienceDetails struct {
-	Result string
 }

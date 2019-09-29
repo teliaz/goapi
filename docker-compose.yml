@@ -27,8 +27,6 @@ services:
       GET_HOSTS_FROM: dns
     networks:
     - gwinetwork
-    #volumes:
-    #- .:/go/src/gwiapi
     ports:
     - 8080:8080
     depends_on:
